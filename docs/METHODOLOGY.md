@@ -84,7 +84,7 @@ Die Eingabe ist im UI bewusst in drei Entscheidungsblöcke gegliedert, damit die
 
 | Bewertungsblock | Kriterien | Kernfrage |
 | --- | --- | --- |
-| **1. Nutzen & Prozesshebel** | Business Value, Handoff Friction, Recurrence | Lohnt es sich überhaupt, diese Aufgabe neu zu organisieren? |
+| **1. Nutzen & Prozesshebel** | Business Value, Handoff Friction, erwartete Recurrence | Lohnt es sich überhaupt, diese Aufgabe neu zu organisieren? |
 | **2. Eignung für KI-gestützte Übernahme** | Context Proximity, AI Leverage, Data Readiness | Kann diese Rolle die Aufgabe mit KI sinnvoll selbst übernehmen? |
 | **3. Verantwortung & Grenze** | Judgment Stakes, Specialist Accountability | Wo muss fachliche Verantwortung oder Freigabe bestehen bleiben? |
 
@@ -98,7 +98,7 @@ Die App nutzt sechs Kriterien auf einer Skala 0–4:
 | AI Leverage | Kann KI substanzielle Analyse/Erstellung/Prüfung übernehmen? | 20% |
 | Handoff Friction | Erzeugt die heutige Übergabe Wartezeit/Rückfragen? | 16% |
 | Context Proximity | Liegt Problemkontext bereits bei der Ausgangsrolle? | 16% |
-| Recurrence | Tritt die Aufgabe wiederkehrend auf? | 14% |
+| Erwartete Recurrence | Wie häufig wird die Aufgabe voraussichtlich wiederkehren? Diese Vorabwertung ist eine Hypothese, keine beobachtete Pilot-Evidenz. | 14% |
 | Data Readiness | Sind Quellen ausreichend verfügbar und nutzbar? | 10% |
 
 Formel:
@@ -143,7 +143,8 @@ Empfohlene Struktur:
 2. Vorher Baseline von Durchlaufzeit, Bearbeitungszeit, Handoffs und Nacharbeit erfassen.
 3. Fachfreigabe explizit benennen.
 4. Qualitätsfehler nach Schwere klassifizieren.
-5. End-to-End-KPI messen; nicht nur Prompt- oder Modellqualität.
+5. Tatsächliche Wiederholungen der Aufgabe im Pilotzeitraum protokollieren.
+6. End-to-End-KPI messen; nicht nur Prompt- oder Modellqualität.
 
 Typische Messgrößen:
 
@@ -151,13 +152,16 @@ Typische Messgrößen:
 - Zahl der Handoffs / Rückfragen
 - Zeit bis zur entscheidungsfähigen Vorlage
 - Nacharbeit / Korrekturquote
+- tatsächliche Wiederholungen im Pilotzeitraum
 - First-pass-Freigabequote
 
 ### Schritt 7 – Recurrence Gate
 
+Die im Scoring verwendete Recurrence ist vor dem Pilot nur eine Erwartungshypothese. Nach dem Pilot wird diese Hypothese gegen beobachtete reale Fälle geprüft.
+
 Ein neues Aufgabenfeld wird erst dann strukturell relevant, wenn die Tätigkeit:
 
-- wiederholt auftritt,
+- im Pilotzeitraum tatsächlich wiederholt auftritt bzw. planbar wiederkehrt,
 - von der Rolle wiederholt mit KI bearbeitet wird,
 - einen stabilen Qualitätsstandard erreicht,
 - nicht bei jedem Fall ein Sonderprojekt bleibt.
