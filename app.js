@@ -3,6 +3,7 @@
 
   const M = window.TaskShiftModel;
   const STORAGE_KEY = 'neue-aufgabenfelder-taskshift-v1';
+  const DEMO_TASK_IDS = new Set((M.DEMO.tasks || []).map((task) => task.id));
 
   const CRITERIA_GROUPS = [
     {
@@ -54,6 +55,7 @@
         readiness: { rules: false, data: false, metrics: false, manager: false },
       },
       tasks: [],
+      demoLoaded: false,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
       draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
@@ -61,10 +63,6 @@
   }
 
   let state = loadState();
-  if (!state.tasks || state.tasks.length === 0) {
-    state = demoState();
-    saveState();
-  }
 
   const $ = (id) => document.getElementById(id);
 
@@ -72,6 +70,7 @@
     return {
       profile: JSON.parse(JSON.stringify(M.DEMO.profile)),
       tasks: JSON.parse(JSON.stringify(M.DEMO.tasks)),
+      demoLoaded: true,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
       draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
@@ -82,8 +81,26 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
-      const loaded = Object.assign(defaultState(), JSON.parse(raw));
+
+      const parsed = JSON.parse(raw);
+      let loaded = Object.assign(defaultState(), parsed);
       delete loaded.demandPotential;
+
+      // Migration from versions that seeded the demo automatically on first start.
+      // Keep user-created tasks, but remove legacy demo tasks unless the demo was
+      // explicitly loaded in a newer version.
+      if (parsed.demoLoaded == null && Array.isArray(loaded.tasks)) {
+        const userTasks = loaded.tasks.filter((task) => !DEMO_TASK_IDS.has(task.id));
+        const hadLegacyDemoTasks = userTasks.length !== loaded.tasks.length;
+
+        if (hadLegacyDemoTasks) {
+          loaded = userTasks.length
+            ? Object.assign(loaded, { tasks: userTasks, demoLoaded: false })
+            : defaultState();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded));
+        }
+      }
+
       return loaded;
     } catch (_) {
       return defaultState();
