@@ -358,6 +358,7 @@
   function markdownReport(state) {
     const profile = state.profile || {};
     const items = portfolio(state.tasks || [], profile);
+    const completeItems = items.filter((t) => t.validation && t.validation.complete);
     const readiness = readinessScore(profile.readiness || {});
     const role = (profile.role || '').trim() || 'Analyse';
     const orgLabels = { klein: 'Klein', mittel: 'Mittel', gross: 'Groß' };
@@ -389,7 +390,8 @@
     lines.push('| Aufgabe | Empfehlung | Fachfreigabe |');
     lines.push('| --- | --- | --- |');
     for (const t of items) {
-      lines.push(`| ${mdCell(t.name)} | ${mdCell(t.recommendation.label)} | ${mdCell(t.approvalOwner || 'nicht definiert')} |`);
+      const recommendationLabel = t.recommendation ? t.recommendation.label : 'Keine Empfehlung – Bewertung unvollständig';
+      lines.push(`| ${mdCell(t.name)} | ${mdCell(recommendationLabel)} | ${mdCell(t.approvalOwner || 'nicht definiert')} |`);
     }
     if (!items.length) {
       lines.push('| Noch keine Aufgabe bewertet | – | – |');
@@ -399,8 +401,18 @@
     lines.push('## Aufgaben im Detail');
     lines.push('');
     for (const t of items) {
-      const p = t.pilot;
       lines.push(`### ${t.name}`);
+      if (!t.validation || !t.validation.complete) {
+        const missing = [...(t.validation?.missing || []), ...(t.validation?.invalid || [])].join(', ');
+        lines.push('');
+        lines.push('**Keine Empfehlung**');
+        lines.push('');
+        lines.push(`Bewertung unvollständig. Fehlende oder ungültige Kriterien: ${missing || 'unbekannt'}.`);
+        lines.push('');
+        continue;
+      }
+
+      const p = t.pilot;
       lines.push('');
       lines.push('**Empfehlung**');
       lines.push('');
@@ -430,22 +442,23 @@
 
     lines.push('## Gemeinsame Erfolgsmessung');
     lines.push('');
-    const metrics = items.length ? items[0].pilot.metrics : [
+    const metrics = completeItems.length ? completeItems[0].pilot.metrics : [
       'End-to-End-Durchlaufzeit',
       'Anzahl der Handoffs / Rückfragen',
       'Nacharbeit oder Korrekturquote',
+      'Tatsächliche Wiederholungen im Pilotzeitraum',
       'Fachliche Freigabequote beim ersten Review',
       'Zeit bis zur entscheidungsfähigen Vorlage',
     ];
     for (const metric of metrics) lines.push(`- ${metric}`);
     lines.push('');
 
-    if (items.length) {
+    if (completeItems.length) {
       lines.push('## Methodische Einordnung');
       lines.push('');
       lines.push('| Aufgabe | Übernahmepotenzial | Verantwortungsgrenze | Arbeitsmodus | Designmuster |');
       lines.push('| --- | ---: | ---: | --- | --- |');
-      for (const t of items) {
+      for (const t of completeItems) {
         lines.push(`| ${mdCell(t.name)} | ${t.potential}/100 | ${t.boundary}/100 | ${mdCell(t.aiMode.label)} | ${mdCell(t.recipe.label)} |`);
       }
       lines.push('');
