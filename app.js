@@ -10,9 +10,9 @@
       title: '1. Nutzen & Prozesshebel',
       question: 'Lohnt es sich überhaupt, diese Aufgabe neu zu organisieren?',
       criteria: [
-        { key: 'businessValue', title: 'Business Value', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
-        { key: 'handoffFriction', title: 'Handoff Friction', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
-        { key: 'recurrence', title: 'Recurrence', desc: 'Wie regelmäßig tritt die Aufgabe auf und lohnt damit ein stabiler Arbeitsmodus?', low: 'selten', high: 'häufig' },
+        { key: 'businessValue', title: 'Geschäftswert', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
+        { key: 'handoffFriction', title: 'Übergabereibung', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
+        { key: 'recurrence', title: 'Wiederholung', desc: 'Wie regelmäßig tritt die Aufgabe auf und lohnt damit ein stabiler Arbeitsmodus?', low: 'selten', high: 'häufig' },
       ],
     },
     {
@@ -20,9 +20,9 @@
       title: '2. Eignung für KI-gestützte Übernahme',
       question: 'Kann diese Rolle die Aufgabe mit KI sinnvoll selbst übernehmen?',
       criteria: [
-        { key: 'contextProximity', title: 'Context Proximity', desc: 'Wie nah ist die Rolle am Problem, an den Daten und an der Entscheidungssituation?', low: 'fern', high: 'nah' },
-        { key: 'aiLeverage', title: 'AI Leverage', desc: 'Wie gut kann KI Analyse, Entwurf, Vergleich, Prüfung oder Ausführung unterstützen?', low: 'gering', high: 'hoch' },
-        { key: 'dataReadiness', title: 'Data Readiness', desc: 'Sind relevante Informationen in ausreichender Qualität und Zugänglichkeit vorhanden?', low: 'schwach', high: 'gut' },
+        { key: 'contextProximity', title: 'Kontextnähe', desc: 'Wie nah ist die Rolle am Problem, an den Daten und an der Entscheidungssituation?', low: 'fern', high: 'nah' },
+        { key: 'aiLeverage', title: 'KI-Hebel', desc: 'Wie gut kann KI Analyse, Entwurf, Vergleich, Prüfung oder Ausführung unterstützen?', low: 'gering', high: 'hoch' },
+        { key: 'dataReadiness', title: 'Datenreife', desc: 'Sind relevante Informationen in ausreichender Qualität und Zugänglichkeit vorhanden?', low: 'schwach', high: 'gut' },
       ],
     },
     {
@@ -30,8 +30,8 @@
       title: '3. Verantwortung & Grenze',
       question: 'Wo muss fachliche Verantwortung oder Freigabe bestehen bleiben?',
       criteria: [
-        { key: 'judgmentStakes', title: 'Judgment Stakes', desc: 'Wie schwer wiegen Fehlurteile, Ausnahmen, Kundenwirkung oder irreversible Entscheidungen?', low: 'gering', high: 'kritisch' },
-        { key: 'specialistAccountability', title: 'Specialist Accountability', desc: 'Wie stark ist formale Fachverantwortung, Freigabe oder Spezialistenwissen zwingend?', low: 'gering', high: 'zwingend' },
+        { key: 'judgmentStakes', title: 'Entscheidungsrisiko', desc: 'Wie schwer wiegen Fehlurteile, Ausnahmen, Kundenwirkung oder irreversible Entscheidungen?', low: 'gering', high: 'kritisch' },
+        { key: 'specialistAccountability', title: 'Fachverantwortung', desc: 'Wie stark ist formale Fachverantwortung, Freigabe oder Spezialistenwissen zwingend?', low: 'gering', high: 'zwingend' },
       ],
     },
   ];
@@ -50,6 +50,7 @@
       demandPotential: 2,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
+      draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
     };
   }
 
@@ -68,6 +69,7 @@
       demandPotential: 2,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
+      draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
     };
   }
 
@@ -135,8 +137,9 @@
     $('criteriaGrid').innerHTML = CRITERIA_GROUPS.map((group) => {
       const cards = group.criteria.map((criterion) => {
         const val = Number(state.draft[criterion.key] ?? 2);
-        return `<div class="criterion">
-          <div class="criterion-head"><div><h4>${esc(criterion.title)}</h4><p>${esc(criterion.desc)}</p></div><span class="level-value" id="value-${criterion.key}">${val}</span></div>
+        const touched = Boolean(state.draftTouched && state.draftTouched[criterion.key]);
+        return `<div class="criterion ${touched ? 'assessed' : 'pending'}" data-criterion-card="${criterion.key}">
+          <div class="criterion-head"><div><h4>${esc(criterion.title)}</h4><p>${esc(criterion.desc)}</p></div><span class="level-value" id="value-${criterion.key}" aria-label="${touched ? 'Bewertung ' + val : 'Noch nicht bewertet'}">${touched ? val : '–'}</span></div>
           <input type="range" min="0" max="4" step="1" value="${val}" data-criterion="${criterion.key}" aria-label="${esc(criterion.title)}" />
           <div class="range-labels"><span>${esc(criterion.low)}</span><span>${esc(criterion.high)}</span></div>
         </div>`;
@@ -155,12 +158,25 @@
 
     $('criteriaGrid').querySelectorAll('input[type="range"]').forEach((input) => {
       input.addEventListener('input', () => {
-        state.draft[input.dataset.criterion] = Number(input.value);
-        $('value-' + input.dataset.criterion).textContent = input.value;
+        const key = input.dataset.criterion;
+        state.draft[key] = Number(input.value);
+        state.draftTouched[key] = true;
+        $('value-' + key).textContent = input.value;
+        $('value-' + key).setAttribute('aria-label', 'Bewertung ' + input.value);
+        const card = document.querySelector(`[data-criterion-card="${key}"]`);
+        if (card) {
+          card.classList.remove('pending');
+          card.classList.add('assessed');
+        }
         saveState();
         renderLivePreview();
       });
     });
+  }
+
+  function assessmentProgress() {
+    const touched = CRITERIA.filter((criterion) => Boolean(state.draftTouched && state.draftTouched[criterion.key])).length;
+    return { touched, total: CRITERIA.length, remaining: CRITERIA.length - touched, complete: touched === CRITERIA.length };
   }
 
   function currentDraftTask() {
@@ -174,6 +190,29 @@
   }
 
   function renderLivePreview() {
+    const progress = assessmentProgress();
+    const addButton = $('addTaskBtn');
+
+    if (!progress.complete) {
+      if (addButton) {
+        addButton.disabled = true;
+        addButton.title = 'Erst alle acht Kriterien bewerten.';
+      }
+      $('livePreview').innerHTML = `<div class="recommendation-preview pending-recommendation">
+        <div class="recommendation-copy">
+          <span class="preview-kicker">Bewertung noch nicht vollständig</span>
+          <strong>Noch ${progress.remaining} von ${progress.total} Kriterien bewerten</strong>
+          <p>Eine Empfehlung erscheint erst, wenn jedes Kriterium bewusst bewertet wurde. Die mittlere Sliderposition ist nur ein neutraler Startpunkt und zählt noch nicht als Bewertung.</p>
+        </div>
+      </div>`;
+      return;
+    }
+
+    if (addButton) {
+      addButton.disabled = false;
+      addButton.title = '';
+    }
+
     const t = M.enrichTask(currentDraftTask(), state.profile);
     $('livePreview').innerHTML = `<div class="recommendation-preview">
       <div class="recommendation-copy">
@@ -222,6 +261,12 @@
   }
 
   function addTask() {
+    const progress = assessmentProgress();
+    if (!progress.complete) {
+      toast(`Bitte zuerst alle Kriterien bewerten. Noch ${progress.remaining} offen.`);
+      return;
+    }
+
     const name = $('taskName').value.trim();
     if (!name) {
       $('taskName').focus();
@@ -243,6 +288,7 @@
     $('approvalOwner').value = '';
     $('taskNotes').value = '';
     state.draft = Object.fromEntries(CRITERIA.map((c) => [c.key, 2]));
+    state.draftTouched = Object.fromEntries(CRITERIA.map((c) => [c.key, false]));
     renderCriteria();
     renderLivePreview();
     saveState();
