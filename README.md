@@ -14,6 +14,7 @@ Die App operationalisiert Befunde aus OpenAI Economic Research, Microsoft Work T
   - **Nutzen & Prozesshebel**
   - **Eignung für KI-gestützte Übernahme**
   - **Verantwortung & Grenze**
+- Neue Aufgaben starten bewusst **unbewertet**: Die mittlere Sliderposition ist nur ein neutraler Startpunkt. Eine Empfehlung wird erst nach Bewertung aller acht Kriterien erzeugt.
 - Daraus zwei methodische Größen ableiten: **Übernahmepotenzial** und **Verantwortungsgrenze**.
 - Arbeitsmodus und Designmuster werden weiterhin berechnet, aber in der Hauptansicht nur bei Bedarf über „?“ eingeblendet.
 - Pro Aufgabe eine Pilothypothese, Freigabegrenze, KPI-Set und Scale Gate erzeugen.
@@ -74,9 +75,9 @@ Das Scoring ist **keine empirisch validierte Prognose**, sondern eine Entscheidu
 
 Die App führt die acht Einzelbewertungen nicht als ungeordnete Liste, sondern in drei Entscheidungsblöcken:
 
-1. **Nutzen & Prozesshebel** – Business Value, Handoff Friction, Recurrence.
-2. **Eignung für KI-gestützte Übernahme** – Context Proximity, AI Leverage, Data Readiness.
-3. **Verantwortung & Grenze** – Judgment Stakes, Specialist Accountability.
+1. **Nutzen & Prozesshebel** – Geschäftswert, Übergabereibung, Wiederholung.
+2. **Eignung für KI-gestützte Übernahme** – Kontextnähe, KI-Hebel, Datenreife.
+3. **Verantwortung & Grenze** – Entscheidungsrisiko, Fachverantwortung.
 
 Daraus beantwortet die App zwei Kernfragen:
 
