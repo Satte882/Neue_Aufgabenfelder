@@ -302,7 +302,6 @@
           <div>
             <h4>Entscheidungslogik</h4>
             <p>${esc(t.recommendation.rationale)}</p>
-            <p><strong>Designmuster:</strong> ${esc(t.recipe.label)} – ${esc(t.recipe.description)}</p>
             <p><strong>Freigabegrenze:</strong> ${esc(p.humanBoundary)}</p>
             ${t.notes ? `<p><strong>Notiz:</strong> ${esc(t.notes)}</p>` : ''}
           </div>
