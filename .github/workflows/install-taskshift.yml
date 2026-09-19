@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.bundle/taskshift_bundle.tar.gz'
+      - '.bundle/READY'
 
 permissions:
   contents: write
@@ -16,11 +16,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unpack application
+      - name: Reconstruct and unpack application
         shell: bash
         run: |
           set -euo pipefail
-          tar -xzf .bundle/taskshift_bundle.tar.gz -C .
+          cat .bundle/chunk-* > /tmp/taskshift.b64
+          base64 --decode /tmp/taskshift.b64 > /tmp/taskshift_bundle.tar.gz
+          tar -xzf /tmp/taskshift_bundle.tar.gz -C .
           rm -rf .bundle
 
       - name: Verify model tests
