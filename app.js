@@ -12,7 +12,7 @@
       criteria: [
         { key: 'businessValue', title: 'Geschäftswert', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
         { key: 'handoffFriction', title: 'Übergabereibung', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
-        { key: 'recurrence', title: 'Erwartete Wiederholung', desc: 'Wie häufig wird die Aufgabe voraussichtlich wiederkehren? Vor dem Pilot ist das eine Hypothese, keine beobachtete Evidenz.', low: 'selten erwartet', high: 'häufig erwartet' },
+        { key: 'recurrence', title: 'Erwartete Wiederholung', desc: 'Wie häufig wird die Aufgabe voraussichtlich wiederkehren?', low: 'selten erwartet', high: 'häufig erwartet' },
       ],
     },
     {
@@ -37,6 +37,13 @@
   ];
 
   const CRITERIA = CRITERIA_GROUPS.flatMap((group) => group.criteria);
+
+  const LEVEL_LABELS = Object.freeze(['sehr gering', 'gering', 'mittel', 'hoch', 'sehr hoch']);
+
+  function levelDisplay(value) {
+    const numeric = Number(value);
+    return `${numeric} · ${LEVEL_LABELS[numeric] || ''}`.trim();
+  }
 
   function defaultState() {
     return {
@@ -138,7 +145,7 @@
         const val = Number(state.draft[criterion.key] ?? 2);
         const touched = Boolean(state.draftTouched && state.draftTouched[criterion.key]);
         return `<div class="criterion ${touched ? 'assessed' : 'pending'}" data-criterion-card="${criterion.key}">
-          <div class="criterion-head"><div><h4>${esc(criterion.title)}</h4><p>${esc(criterion.desc)}</p></div><span class="level-value" id="value-${criterion.key}" aria-label="${touched ? 'Bewertung ' + val : 'Noch nicht bewertet'}">${touched ? val : '–'}</span></div>
+          <div class="criterion-head"><div><h4>${esc(criterion.title)}</h4><p>${esc(criterion.desc)}</p></div><span class="level-value" id="value-${criterion.key}" aria-label="${touched ? 'Bewertung ' + levelDisplay(val) : 'Noch nicht bewertet'}">${touched ? levelDisplay(val) : '–'}</span></div>
           <input type="range" min="0" max="4" step="1" value="${val}" data-criterion="${criterion.key}" aria-label="${esc(criterion.title)}" />
           <div class="range-labels"><span>${esc(criterion.low)}</span><span>${esc(criterion.high)}</span></div>
         </div>`;
@@ -160,8 +167,8 @@
         const key = input.dataset.criterion;
         state.draft[key] = Number(input.value);
         state.draftTouched[key] = true;
-        $('value-' + key).textContent = input.value;
-        $('value-' + key).setAttribute('aria-label', 'Bewertung ' + input.value);
+        $('value-' + key).textContent = levelDisplay(input.value);
+        $('value-' + key).setAttribute('aria-label', 'Bewertung ' + levelDisplay(input.value));
         const card = document.querySelector(`[data-criterion-card="${key}"]`);
         if (card) {
           card.classList.remove('pending');
