@@ -36,7 +36,7 @@ python -m http.server 8000
 
 Dann `http://localhost:8000` öffnen.
 
-Beim ersten Start ist ein Demo-Portfolio für einen **Produktmanager bei einem Reiseveranstalter** geladen. Über „Zurücksetzen“ kann mit einer leeren Analyse begonnen werden.
+Beim ersten Start beginnt TASKSHIFT mit einer **leeren Analyse**. Das Demo-Portfolio für einen **Produktmanager bei einem Reiseveranstalter** wird nur über „Demo laden“ eingeblendet.
 
 ## Vorgehensmodell in Kurzform
 
