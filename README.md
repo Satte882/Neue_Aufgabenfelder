@@ -19,7 +19,7 @@ Die App operationalisiert Befunde aus OpenAI Economic Research, Microsoft Work T
 - Arbeitsmodus und Designmuster werden weiterhin berechnet, aber in der Hauptansicht nur bei Bedarf über „?“ eingeblendet.
 - Pro Aufgabe eine Pilothypothese, Freigabegrenze, KPI-Set und Scale Gate erzeugen.
 - Aufgaben im Portfolio visualisieren.
-- Ergebnis als Markdown exportieren oder über den Browser als PDF drucken.
+- Ergebnis als kompakte Markdown-Entscheidungsvorlage exportieren oder über den Browser als PDF drucken.
 - Alle Daten lokal im Browser speichern; keine API, kein Backend, keine Datenübertragung.
 
 ## Sofort starten
@@ -126,7 +126,7 @@ Prüft Syntax und Kernlogik des Scoring-Modells.
 - [x] Transparente Entscheidungslogik.
 - [x] Portfolio-Visualisierung.
 - [x] Pilotplan pro Aufgabe.
-- [x] Markdown- und Print/PDF-Export.
+- [x] Management-orientierter Markdown-Export und Print/PDF-Export.
 - [x] Persistenz via `localStorage`.
 - [x] Mobile Darstellung.
 - [x] Methodik und Evidenz dokumentiert.
