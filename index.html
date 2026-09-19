@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">TASKSHIFT · v1.0</div>
+        <div class="eyebrow">TASKSHIFT · v1.1</div>
         <h1>Neue Aufgabenfelder</h1>
         <p>Von „KI macht Aufgaben schneller“ zu „wer kann welche Arbeit künftig selbst übernehmen?“</p>
       </div>
@@ -37,11 +37,15 @@
             <div class="eyebrow">Zielbild</div>
             <h2>Arbeit näher an die Person bringen, die das Problem zuerst erkennt.</h2>
             <p>Die App prüft neue Aufgaben nicht danach, ob KI sie theoretisch kann, sondern ob eine Rollenerweiterung geschäftlich sinnvoll ist, wo menschliches Urteil zentral bleibt und wie ein belastbarer Pilot aussieht.</p>
-          </article>
-          <article class="stats-card" aria-label="Evidenz-Schnellüberblick">
-            <div class="stat"><strong>43,5%</strong><span>der nicht-generischen berufsspezifischen ChatGPT-Nutzung lag in einer OpenAI-Analyse außerhalb des eigenen Berufs.</span></div>
-            <div class="stat"><strong>23,6%</strong><span>kehrten im Folgemonat zu einer bereits genutzten berufsfremden Aufgabe zurück (beobachtete Teilstichprobe).</span></div>
-            <div class="stat"><strong>50%</strong><span>nannten Qualitätskontrolle als wichtiger werdende menschliche Fähigkeit; 46% kritisches Denken.</span></div>
+            <details class="info-popover hero-info">
+              <summary aria-label="Forschungsbasis anzeigen" title="Forschungsbasis">?</summary>
+              <div class="info-popover-card">
+                <h3>Warum Aufgabenverschiebung?</h3>
+                <p><strong>43,5%</strong> der nicht-generischen berufsspezifischen ChatGPT-Nutzung lagen in einer OpenAI-Analyse außerhalb des eigenen Berufs.</p>
+                <p><strong>23,6%</strong> kehrten im Folgemonat zu einer bereits genutzten berufsfremden Aufgabe zurück.</p>
+                <p class="muted">Die Werte begründen die Suchrichtung. Sie sind keine Schwellenwerte des TASKSHIFT-Modells.</p>
+              </div>
+            </details>
           </article>
         </div>
 
@@ -91,7 +95,7 @@
               <div class="step-badge">2</div>
               <h2>Neue Aufgabe bewerten</h2>
             </div>
-            <span class="hint">Task Crossover + Human Boundary</span>
+            <span class="hint">Aufgabenverschiebung + Verantwortungsgrenze</span>
           </div>
 
           <div class="form-grid two">
@@ -148,7 +152,7 @@
 
           <div class="portfolio-layout">
             <div class="quadrant-wrap">
-              <div class="axis-y">Human Boundary ↑</div>
+              <div class="axis-y">Verantwortungsgrenze ↑</div>
               <div class="quadrant" id="quadrantPlot" aria-label="Portfolio-Matrix">
                 <div class="q-label q-top-left">Vorbereiten<br><small>Fachfreigabe bleibt</small></div>
                 <div class="q-label q-top-right">Übernehmen + Freigabe<br><small>hoher Nutzen, hohe Verantwortung</small></div>
@@ -158,7 +162,7 @@
                 <div class="midline horizontal"></div>
                 <div id="plotPoints"></div>
               </div>
-              <div class="axis-x">Expansion Potential →</div>
+              <div class="axis-x">Übernahmepotenzial →</div>
             </div>
             <div class="portfolio-summary" id="portfolioSummary"></div>
           </div>
@@ -176,7 +180,7 @@
             <article><span>0</span><div><h3>Outcome setzen</h3><p>Ein konkretes Geschäftsergebnis definieren. Kein „KI einsetzen“ als Ziel.</p><em>Artefakt: Outcome + Baseline-KPI</em></div></article>
             <article><span>1</span><div><h3>Arbeit sichtbar machen</h3><p>Handoffs, Wartezeiten, Ausnahmen, Entscheidungsrechte und Datenquellen erfassen.</p><em>Artefakt: schlanke End-to-End-Map</em></div></article>
             <article><span>2</span><div><h3>Task-Crossover-Kandidaten finden</h3><p>Fragen: Wo erkennt eine Rolle das Problem zuerst? Welche Arbeit wird heute nur wegen Fachgrenzen weitergereicht?</p><em>Artefakt: Kandidatenliste</em></div></article>
-            <article><span>3</span><div><h3>Human Boundary festlegen</h3><p>Trennen zwischen Ausführung, Beurteilung, Ausnahmebehandlung, Entscheidung und formaler Freigabe.</p><em>Artefakt: Freigabegrenzen-Matrix</em></div></article>
+            <article><span>3</span><div><h3>Verantwortungsgrenze festlegen</h3><p>Trennen zwischen Ausführung, Beurteilung, Ausnahmebehandlung, Entscheidung und formaler Freigabe.</p><em>Artefakt: Freigabegrenzen-Matrix</em></div></article>
             <article><span>4</span><div><h3>AI-Arbeitsmodus designen</h3><p>Asking, Collaboration, Delegation oder Exploration – abhängig von Wiederholung, Datenlage und Urteilsbedarf.</p><em>Artefakt: Human-AI-Workflow</em></div></article>
             <article><span>5</span><div><h3>Mit realen Fällen pilotieren</h3><p>Nicht Prompt-Qualität, sondern End-to-End-Wert messen: Durchlaufzeit, Handoffs, Qualität, Nacharbeit.</p><em>Artefakt: Pilot + Eval-Set</em></div></article>
             <article><span>6</span><div><h3>Wiederholung prüfen</h3><p>Ein einmaliger Erfolg ist noch kein neues Aufgabenfeld. Entscheidend ist, ob die Aufgabe verlässlich in den Arbeitsalltag zurückkehrt.</p><em>Artefakt: Recurrence-Evidence</em></div></article>
@@ -228,12 +232,6 @@
               <a href="https://openai.com/index/modeling-ai-jobs-transition/" target="_blank" rel="noreferrer">OpenAI · 25.04.2026</a>
             </article>
             <article class="evidence-card">
-              <span class="evidence-type empirical">Empirisch</span>
-              <h3>Urteil und Qualitätskontrolle gewinnen an Bedeutung</h3>
-              <p>Im Microsoft Work Trend Index entfallen 49% der analysierten Copilot-Konversationen auf Analyse, Schlussfolgern und Entscheiden. Befragte nennen Qualitätskontrolle (50%) und kritisches Denken (46%) als wichtiger werdende Fähigkeiten.</p>
-              <a href="https://www.microsoft.com/en-us/worklab/work-trend-index/agents-human-agency-and-the-opportunity-for-every-organization" target="_blank" rel="noreferrer">Microsoft Work Trend Index 2026</a>
-            </article>
-            <article class="evidence-card">
               <span class="evidence-type practice">Praxisbefund</span>
               <h3>Outcome und End-to-End-Workflow vor Tool</h3>
               <p>Microsoft beschreibt als eigene Lernerfahrung: zuerst Geschäftsergebnis, dann End-to-End-Arbeitsablauf neu gestalten. Ein Agent in einem schlechten Prozess beschleunigt sonst nur einzelne Schritte und verschiebt den Engpass.</p>
@@ -252,8 +250,8 @@
           <h2>Heuristik der App</h2>
           <p>Die Quellen liefern keine validierte Formel dafür, ob eine konkrete Aufgabe den Besitzer wechseln soll. Das Scoring ist deshalb eine explizite Synthese:</p>
           <div class="formula-grid">
-            <div><strong>Expansion Potential</strong><span>Business Value 24% · AI Leverage 20% · Handoff Friction 16% · Context Proximity 16% · Recurrence 14% · Data Readiness 10%</span></div>
-            <div><strong>Human Boundary</strong><span>Judgment Stakes 55% · Specialist Accountability 45%</span></div>
+            <div><strong>Übernahmepotenzial</strong><span>Business Value 24% · AI Leverage 20% · Handoff Friction 16% · Context Proximity 16% · Recurrence 14% · Data Readiness 10%</span></div>
+            <div><strong>Verantwortungsgrenze</strong><span>Judgment Stakes 55% · Specialist Accountability 45%</span></div>
           </div>
           <p class="muted">Die Gewichtung dient der strukturierten Diskussion und Vergleichbarkeit. Sie ist bewusst im UI und in der Methodik dokumentiert, statt als „AI Score“ verborgen zu werden.</p>
         </section>
