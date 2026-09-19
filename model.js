@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '1.6.0';
+  const VERSION = '1.7.0';
 
   const WEIGHTS = Object.freeze({
     businessValue: 0.24,
@@ -20,6 +20,11 @@
     judgmentStakes: 0.55,
     specialistAccountability: 0.45,
   });
+
+  const TASK_CRITERIA = Object.freeze([
+    ...Object.keys(WEIGHTS),
+    ...Object.keys(BOUNDARY_WEIGHTS),
+  ]);
 
   const SOURCE_AREAS = [
     'Marketing',
@@ -117,11 +122,33 @@
     return clamp(value, 0, 4);
   }
 
+  function validateTask(task) {
+    const missing = [];
+    const invalid = [];
+
+    for (const key of TASK_CRITERIA) {
+      const value = task && task[key];
+      if (value == null || value === '') {
+        missing.push(key);
+        continue;
+      }
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric) || numeric < 0 || numeric > 4) invalid.push(key);
+    }
+
+    return {
+      complete: missing.length === 0 && invalid.length === 0,
+      missing,
+      invalid,
+    };
+  }
+
   function round(value) {
     return Math.round(value);
   }
 
   function expansionPotential(task) {
+    if (!validateTask(task).complete) return null;
     let weighted = 0;
     for (const [key, weight] of Object.entries(WEIGHTS)) {
       weighted += normalizeLevel(task[key]) * weight;
@@ -130,6 +157,7 @@
   }
 
   function humanBoundary(task) {
+    if (!validateTask(task).complete) return null;
     let weighted = 0;
     for (const [key, weight] of Object.entries(BOUNDARY_WEIGHTS)) {
       weighted += normalizeLevel(task[key]) * weight;
@@ -143,6 +171,7 @@
   }
 
   function recommendation(task) {
+    if (!validateTask(task).complete) return null;
     const potential = expansionPotential(task);
     const boundary = humanBoundary(task);
 
@@ -187,6 +216,7 @@
   }
 
   function aiMode(task) {
+    if (!validateTask(task).complete) return null;
     const ai = normalizeLevel(task.aiLeverage);
     const recurrence = normalizeLevel(task.recurrence);
     const data = normalizeLevel(task.dataReadiness);
@@ -208,33 +238,47 @@
   }
 
   function transformationRecipe(task) {
+    if (!validateTask(task).complete) return null;
+
     const friction = normalizeLevel(task.handoffFriction);
     const recurrence = normalizeLevel(task.recurrence);
     const ai = normalizeLevel(task.aiLeverage);
     const proximity = normalizeLevel(task.contextProximity);
+    const boundary = humanBoundary(task);
 
+    let recipe;
     if (friction >= 3 && recurrence >= 3 && proximity >= 2) {
-      return {
+      recipe = {
         key: 'process-redesign',
         label: 'AI-Powered Process Redesign',
         description: 'Nicht nur den Handoff beschleunigen: End-to-End-Ablauf, Entscheidungsrechte und Datenfluss neu schneiden.',
       };
-    }
-    if (ai >= 4 && recurrence <= 2) {
-      return {
+    } else if (ai >= 4 && recurrence <= 2) {
+      recipe = {
         key: 'ai-first',
         label: 'AI-First Possibility',
         description: 'Prüfen, ob durch KI ein neuer Output oder ein neuer Arbeitsmodus möglich wird, statt nur den alten Ablauf zu beschleunigen.',
       };
+    } else {
+      recipe = {
+        key: 'persona',
+        label: 'Persona Acceleration',
+        description: 'Die konkrete Rolle mit KI befähigen, einen bisher weitergereichten Arbeitsschritt selbst vorzubereiten oder auszuführen.',
+      };
     }
-    return {
-      key: 'persona',
-      label: 'Persona Acceleration',
-      description: 'Die konkrete Rolle mit KI befähigen, einen bisher weitergereichten Arbeitsschritt selbst vorzubereiten oder auszuführen.',
-    };
+
+    const control = boundary >= 75
+      ? 'Verpflichtender menschlicher Freigabepunkt im Arbeitsablauf; KI darf vorbereiten, aber nicht final freigeben.'
+      : boundary >= 40
+        ? 'Definierter Review- oder Freigabepunkt bleibt Teil des Arbeitsablaufs; Ausnahmen werden eskaliert.'
+        : 'Ausführung innerhalb dokumentierter Leitplanken; Ausnahmen werden eskaliert.';
+
+    return Object.assign(recipe, { control });
   }
 
   function pilotPlan(task, profile) {
+    if (!validateTask(task).complete) return null;
+
     const rec = recommendation(task);
     const mode = aiMode(task);
     const recipe = transformationRecipe(task);
@@ -258,7 +302,7 @@
 
     return {
       hypothesis,
-      scope: '2–4 Wochen mit realen Fällen; zunächst klein genug, dass jeder Fehler nachvollziehbar bleibt.',
+      scope: '2–4 Wochen mit realen Fällen; zunächst klein genug, dass jeder Fehler nachvollziehbar bleibt. Tatsächliche Wiederholungen der Aufgabe im Pilotzeitraum protokollieren.',
       baseline: 'Vor Start aktuelle Durchlaufzeit, aktive Bearbeitungszeit, Handoffs und Nacharbeit erfassen.',
       mode: `${mode.label}: ${mode.description}`,
       humanBoundary: approval,
@@ -266,31 +310,36 @@
         'End-to-End-Durchlaufzeit',
         'Anzahl der Handoffs / Rückfragen',
         'Nacharbeit oder Korrekturquote',
+        'Tatsächliche Wiederholungen im Pilotzeitraum',
         'Fachliche Freigabequote beim ersten Review',
         'Zeit bis zur entscheidungsfähigen Vorlage',
       ],
-      gate: 'Skalieren erst, wenn Business-KPI messbar besser wird und Qualitäts-/Risikoguardrails stabil bleiben. Sonst Scope anpassen oder Handoff beibehalten.',
+      gate: 'Skalieren erst, wenn die erwartete Wiederholung durch reale Fälle bestätigt ist, der Business-KPI messbar besser wird und Qualitäts-/Risikoguardrails stabil bleiben. Sonst Scope anpassen oder Handoff beibehalten.',
       recipe: `${recipe.label}: ${recipe.description}`,
+      control: recipe.control,
     };
-  }
-
-  function roleTransition(tasks, demandPotential) {
-    if (!tasks || tasks.length === 0) return { key: 'unknown', label: 'Noch nicht ableitbar', description: 'Mindestens eine Aufgabe bewerten.' };
-    const avgAi = tasks.reduce((s, t) => s + normalizeLevel(t.aiLeverage), 0) / tasks.length;
-    const avgBoundary = tasks.reduce((s, t) => s + humanBoundary(t), 0) / tasks.length;
-    const demand = normalizeLevel(demandPotential == null ? 2 : demandPotential);
-
-    if (avgAi < 1.5) return { key: 'less-change', label: 'Weniger unmittelbare Veränderung', description: 'Die betrachteten Kernaufgaben zeigen derzeit geringe KI-Hebelwirkung. Administrative Randaufgaben können sich dennoch verändern.' };
-    if (avgAi >= 2.7 && demand >= 3 && avgBoundary >= 40) return { key: 'grow', label: 'Mit KI wachsen', description: 'Hohe KI-Hebelwirkung plus menschliche Zentralität und zusätzliche Nachfrage sprechen für Kapazitäts- oder Leistungswachstum.' };
-    if (avgAi >= 2.7 && avgBoundary < 35) return { key: 'automation-pressure', label: 'Höherer Automatisierungsdruck', description: 'Viele betrachtete Aufgaben sind technisch gut delegierbar und benötigen wenig menschliche Zentralität. Das ist ein Szenariohinweis, keine Prognose.' };
-    return { key: 'reorganize', label: 'Rolle reorganisiert sich', description: 'KI kann substanzielle Arbeit übernehmen, während Urteil, Verantwortung, Ausnahmen oder Beziehungen menschlich zentral bleiben.' };
   }
 
   function enrichTask(task, profile) {
     const clean = Object.assign({}, task);
+    const validation = validateTask(clean);
+
+    if (!validation.complete) {
+      return Object.assign(clean, {
+        validation,
+        potential: null,
+        boundary: null,
+        recommendation: null,
+        aiMode: null,
+        recipe: null,
+        pilot: null,
+      });
+    }
+
     const potential = expansionPotential(clean);
     const boundary = humanBoundary(clean);
     return Object.assign(clean, {
+      validation,
       potential,
       boundary,
       recommendation: recommendation(clean),
@@ -301,14 +350,15 @@
   }
 
   function portfolio(tasks, profile) {
-    return (tasks || []).map((t) => enrichTask(t, profile)).sort((a, b) => b.potential - a.potential);
+    return (tasks || [])
+      .map((t) => enrichTask(t, profile))
+      .sort((a, b) => (b.potential ?? -1) - (a.potential ?? -1));
   }
 
   function markdownReport(state) {
     const profile = state.profile || {};
     const items = portfolio(state.tasks || [], profile);
     const readiness = readinessScore(profile.readiness || {});
-    const transition = roleTransition(state.tasks || [], state.demandPotential);
     const role = (profile.role || '').trim() || 'Analyse';
     const orgLabels = { klein: 'Klein', mittel: 'Mittel', gross: 'Groß' };
     const lines = [];
@@ -330,7 +380,6 @@
     lines.push(`| Geschäftsergebnis | ${mdCell(profile.outcome)} |`);
     lines.push(`| Organisationsgröße | ${mdCell(orgLabels[profile.organization] || profile.organization)} |`);
     lines.push(`| Skalierungsreife | ${readiness}% |`);
-    lines.push(`| Rollen-Szenario | ${mdCell(transition.label)} |`);
     lines.push('');
     lines.push('> Methodischer Hinweis: Übernahmepotenzial und Verantwortungsgrenze sind transparente Entscheidungsheuristiken, keine empirisch validierte Prognose.');
     lines.push('');
@@ -373,6 +422,8 @@
       lines.push(`- Hypothese: ${p.hypothesis}`);
       lines.push(`- Umfang: ${p.scope}`);
       lines.push(`- Baseline: ${p.baseline}`);
+      lines.push(`- Designmuster: ${t.recipe.label}`);
+      lines.push(`- Kontrollpunkt: ${t.recipe.control}`);
       lines.push(`- Scale Gate: ${p.gate}`);
       lines.push('');
     }
@@ -420,8 +471,10 @@
     VERSION,
     WEIGHTS,
     BOUNDARY_WEIGHTS,
+    TASK_CRITERIA,
     SOURCE_AREAS,
     DEMO,
+    validateTask,
     expansionPotential,
     humanBoundary,
     readinessScore,
@@ -429,7 +482,6 @@
     aiMode,
     transformationRecipe,
     pilotPlan,
-    roleTransition,
     enrichTask,
     portfolio,
     markdownReport,
