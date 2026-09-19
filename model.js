@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '1.5.0';
+  const VERSION = '1.6.0';
 
   const WEIGHTS = Object.freeze({
     businessValue: 0.24,
