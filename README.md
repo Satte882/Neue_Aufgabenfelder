@@ -10,11 +10,12 @@ Die App operationalisiert Befunde aus OpenAI Economic Research, Microsoft Work T
 
 - Rolle und gewünschtes Geschäftsergebnis erfassen.
 - Kandidaten für **Task Crossover** / neue Aufgabenfelder bewerten.
-- Zwei getrennte Größen sichtbar machen:
-  - **Expansion Potential**: Nutzen einer Aufgabenverschiebung.
-  - **Human Boundary**: Stärke der menschlichen Urteils-/Freigabegrenze.
-- Passenden AI-Arbeitsmodus ableiten: **Asking, Collaboration, Delegation, Exploration**.
-- Ein Designmuster zuordnen: **Persona Acceleration, AI-Powered Process Redesign, AI-First Possibility**.
+- Bewertung in drei logisch getrennten Blöcken:
+  - **Nutzen & Prozesshebel**
+  - **Eignung für KI-gestützte Übernahme**
+  - **Verantwortung & Grenze**
+- Daraus zwei methodische Größen ableiten: **Übernahmepotenzial** und **Verantwortungsgrenze**.
+- Arbeitsmodus und Designmuster werden weiterhin berechnet, aber in der Hauptansicht nur bei Bedarf über „?“ eingeblendet.
 - Pro Aufgabe eine Pilothypothese, Freigabegrenze, KPI-Set und Scale Gate erzeugen.
 - Aufgaben im Portfolio visualisieren.
 - Ergebnis als Markdown exportieren oder über den Browser als PDF drucken.
@@ -41,7 +42,7 @@ Beim ersten Start ist ein Demo-Portfolio für einen **Produktmanager bei einem R
 1. **Outcome setzen** – Geschäftsergebnis und Baseline definieren.
 2. **Arbeit sichtbar machen** – Handoffs, Wartezeiten, Ausnahmen, Daten und Entscheidungsrechte erfassen.
 3. **Task-Crossover-Kandidaten finden** – Aufgaben identifizieren, die heute nur wegen Funktionsgrenzen weitergereicht werden.
-4. **Human Boundary festlegen** – Ausführung von Urteil, Entscheidung und formaler Freigabe trennen.
+4. **Verantwortungsgrenze festlegen** – Ausführung von Urteil, Entscheidung und formaler Freigabe trennen.
 5. **AI-Arbeitsmodus designen** – Asking, Collaboration, Delegation oder Exploration.
 6. **Mit realen Fällen pilotieren** – End-to-End-Wert statt Prompt-Qualität messen.
 7. **Wiederholung prüfen** – Ein neues Aufgabenfeld entsteht erst, wenn die Aufgabe verlässlich in den Arbeitsalltag zurückkehrt.
@@ -53,7 +54,7 @@ Details: [docs/METHODOLOGY.md](docs/METHODOLOGY.md)
 
 Das Scoring ist **keine empirisch validierte Prognose**, sondern eine Entscheidungsheuristik.
 
-### Expansion Potential
+### Übernahmepotenzial
 
 | Kriterium | Gewicht |
 | --- | ---: |
@@ -64,14 +65,20 @@ Das Scoring ist **keine empirisch validierte Prognose**, sondern eine Entscheidu
 | Recurrence | 14% |
 | Data Readiness | 10% |
 
-### Human Boundary
+### Verantwortungsgrenze
 
 | Kriterium | Gewicht |
 | --- | ---: |
 | Judgment Stakes | 55% |
 | Specialist Accountability | 45% |
 
-Die App trennt damit bewusst zwei Fragen:
+Die App führt die acht Einzelbewertungen nicht als ungeordnete Liste, sondern in drei Entscheidungsblöcken:
+
+1. **Nutzen & Prozesshebel** – Business Value, Handoff Friction, Recurrence.
+2. **Eignung für KI-gestützte Übernahme** – Context Proximity, AI Leverage, Data Readiness.
+3. **Verantwortung & Grenze** – Judgment Stakes, Specialist Accountability.
+
+Daraus beantwortet die App zwei Kernfragen:
 
 - **Lohnt es sich, die Aufgabe näher an die Rolle zu ziehen?**
 - **Wer muss trotz KI die fachliche Entscheidung oder Freigabe behalten?**
