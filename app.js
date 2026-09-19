@@ -12,7 +12,7 @@
       criteria: [
         { key: 'businessValue', title: 'Geschäftswert', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
         { key: 'handoffFriction', title: 'Übergabereibung', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
-        { key: 'recurrence', title: 'Wiederholung', desc: 'Wie regelmäßig tritt die Aufgabe auf und lohnt damit ein stabiler Arbeitsmodus?', low: 'selten', high: 'häufig' },
+        { key: 'recurrence', title: 'Erwartete Wiederholung', desc: 'Wie häufig wird die Aufgabe voraussichtlich wiederkehren? Vor dem Pilot ist das eine Hypothese, keine beobachtete Evidenz.', low: 'selten erwartet', high: 'häufig erwartet' },
       ],
     },
     {
@@ -47,7 +47,6 @@
         readiness: { rules: false, data: false, metrics: false, manager: false },
       },
       tasks: [],
-      demandPotential: 2,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
       draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
@@ -66,7 +65,6 @@
     return {
       profile: JSON.parse(JSON.stringify(M.DEMO.profile)),
       tasks: JSON.parse(JSON.stringify(M.DEMO.tasks)),
-      demandPotential: 2,
       selectedSourceArea: 'Marketing',
       draft: Object.fromEntries(CRITERIA.map((c) => [c.key, 2])),
       draftTouched: Object.fromEntries(CRITERIA.map((c) => [c.key, false])),
@@ -77,7 +75,9 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
-      return Object.assign(defaultState(), JSON.parse(raw));
+      const loaded = Object.assign(defaultState(), JSON.parse(raw));
+      delete loaded.demandPotential;
+      return loaded;
     } catch (_) {
       return defaultState();
     }
@@ -230,6 +230,7 @@
             <div><dt>Designmuster</dt><dd>${esc(t.recipe.label)}</dd></div>
           </dl>
           <p>${esc(t.aiMode.description)}</p>
+          <p><strong>Kontrollpunkt:</strong> ${esc(t.recipe.control)}</p>
         </div>
       </details>
     </div>`;
@@ -242,21 +243,14 @@
     $('readyData').checked = !!state.profile.readiness.data;
     $('readyMetrics').checked = !!state.profile.readiness.metrics;
     $('readyManager').checked = !!state.profile.readiness.manager;
-    $('demandPotential').value = state.demandPotential ?? 2;
     document.querySelectorAll('#orgButtons button').forEach((b) => b.classList.toggle('active', b.dataset.value === state.profile.organization));
     renderReadiness();
-    renderTransition();
   }
 
   function renderReadiness() {
     const score = M.readinessScore(state.profile.readiness);
     $('readinessBar').style.width = score + '%';
     $('readinessValue').textContent = score + '%';
-  }
-
-  function renderTransition() {
-    const s = M.roleTransition(state.tasks, state.demandPotential);
-    $('transitionScenario').innerHTML = `<strong>${esc(s.label)}</strong><p>${esc(s.description)}</p>`;
   }
 
   function addTask() {
@@ -277,7 +271,6 @@
     state.tasks.push(task);
     saveState();
     renderPortfolio();
-    renderTransition();
     clearDraftInputs();
     toast('Aufgabe wurde ins Portfolio übernommen.');
   }
@@ -303,16 +296,18 @@
     const items = M.portfolio(state.tasks, state.profile);
     $('portfolioCount').textContent = `${items.length} ${items.length === 1 ? 'Aufgabe' : 'Aufgaben'}`;
 
-    $('plotPoints').innerHTML = items.map((t, idx) => {
+    const completeItems = items.filter((t) => t.validation && t.validation.complete);
+
+    $('plotPoints').innerHTML = completeItems.map((t, idx) => {
       const left = Math.max(4, Math.min(96, t.potential));
       const bottom = Math.max(4, Math.min(96, t.boundary));
       return `<div class="plot-point" style="left:${left}%; bottom:${bottom}%" data-label="${esc(t.name)}" title="${esc(t.name)}">${idx + 1}</div>`;
     }).join('');
 
-    const strong = items.filter((t) => ['own', 'own-with-approval'].includes(t.recommendation.key)).length;
-    const guarded = items.filter((t) => t.recommendation.key === 'prepare-only').length;
-    const explore = items.filter((t) => t.recommendation.key === 'explore').length;
-    const avgPotential = items.length ? Math.round(items.reduce((s, t) => s + t.potential, 0) / items.length) : 0;
+    const strong = completeItems.filter((t) => ['own', 'own-with-approval'].includes(t.recommendation.key)).length;
+    const guarded = completeItems.filter((t) => t.recommendation.key === 'prepare-only').length;
+    const explore = completeItems.filter((t) => t.recommendation.key === 'explore').length;
+    const avgPotential = completeItems.length ? Math.round(completeItems.reduce((s, t) => s + t.potential, 0) / completeItems.length) : 0;
     const readiness = M.readinessScore(state.profile.readiness);
 
     $('portfolioSummary').innerHTML = `
@@ -323,6 +318,17 @@
       <div class="summary-card"><strong>${readiness}%</strong><span>Skalierungs-Reife</span></div>`;
 
     $('taskList').innerHTML = items.length ? items.map((t, idx) => {
+      if (!t.validation || !t.validation.complete) {
+        const missing = [...(t.validation?.missing || []), ...(t.validation?.invalid || [])].join(', ');
+        return `<article class="task-card">
+          <div class="task-head">
+            <div><h3>${idx + 1}. ${esc(t.name || 'Unvollständige Aufgabe')}</h3><p>Bewertung unvollständig · fehlende/ungültige Kriterien: ${esc(missing || 'unbekannt')}</p></div>
+            <div class="task-badges"><span class="badge warn">Keine Empfehlung</span></div>
+          </div>
+          <div class="task-actions"><button type="button" data-delete="${esc(t.id)}">Aufgabe entfernen</button></div>
+        </article>`;
+      }
+
       const p = t.pilot;
       return `<article class="task-card">
         <div class="task-head">
@@ -339,6 +345,7 @@
                   <div><dt>Arbeitsmodus</dt><dd>${esc(t.aiMode.label)}</dd></div>
                   <div><dt>Designmuster</dt><dd>${esc(t.recipe.label)}</dd></div>
                 </dl>
+                <p><strong>Kontrollpunkt:</strong> ${esc(t.recipe.control)}</p>
               </div>
             </details>
           </div>
@@ -366,7 +373,6 @@
         state.tasks = state.tasks.filter((t) => t.id !== btn.dataset.delete);
         saveState();
         renderPortfolio();
-        renderTransition();
       });
     });
   }
@@ -388,11 +394,6 @@
         renderReadiness();
         renderPortfolio();
       });
-    });
-    $('demandPotential').addEventListener('input', (e) => {
-      state.demandPotential = Number(e.target.value);
-      saveState();
-      renderTransition();
     });
   }
 
