@@ -63,7 +63,7 @@ Das Scoring ist **keine empirisch validierte Prognose**, sondern eine Entscheidu
 | AI Leverage | 20% |
 | Handoff Friction | 16% |
 | Context Proximity | 16% |
-| Recurrence | 14% |
+| Erwartete Wiederholung (vor Pilot) | 14% |
 | Data Readiness | 10% |
 
 ### Verantwortungsgrenze
@@ -73,7 +73,7 @@ Das Scoring ist **keine empirisch validierte Prognose**, sondern eine Entscheidu
 | Judgment Stakes | 55% |
 | Specialist Accountability | 45% |
 
-Die App führt die acht Einzelbewertungen nicht als ungeordnete Liste, sondern in drei Entscheidungsblöcken:
+Die App führt die acht Einzelbewertungen nicht als ungeordnete Liste, sondern in drei Entscheidungsblöcken. Die Wiederholung ist vor dem Pilot nur eine **Erwartungshypothese**; erst reale Pilotfälle liefern die Recurrence-Evidence für die Skalierungsentscheidung:
 
 1. **Nutzen & Prozesshebel** – Geschäftswert, Übergabereibung, Wiederholung.
 2. **Eignung für KI-gestützte Übernahme** – Kontextnähe, KI-Hebel, Datenreife.
