@@ -121,16 +121,15 @@
   }
 
   function renderSourceAreas() {
-    $('sourceAreaPicker').innerHTML = M.SOURCE_AREAS.map((area) =>
-      `<button type="button" data-area="${esc(area)}" class="${area === state.selectedSourceArea ? 'active' : ''}">${esc(area)}</button>`
+    const picker = $('sourceAreaPicker');
+    picker.innerHTML = M.SOURCE_AREAS.map((area) =>
+      `<option value="${esc(area)}">${esc(area)}</option>`
     ).join('');
-    $('sourceAreaPicker').querySelectorAll('button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        state.selectedSourceArea = btn.dataset.area;
-        saveState();
-        renderSourceAreas();
-      });
-    });
+    picker.value = state.selectedSourceArea;
+    picker.onchange = () => {
+      state.selectedSourceArea = picker.value;
+      saveState();
+    };
   }
 
   function renderCriteria() {
