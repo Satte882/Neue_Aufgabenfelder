@@ -24,7 +24,7 @@ Dass KI eine berufsfremde Aufgabe technisch unterstützt, bedeutet nicht automat
 
 ### P4 – Ausführung und Verantwortung getrennt modellieren
 
-Eine Rolle kann Analyse, Entwurf oder Vorprüfung selbst übernehmen, während Entscheidung oder formale Freigabe beim Spezialisten bleibt. Diese Trennung ist der Kern der **Human Boundary**.
+Eine Rolle kann Analyse, Entwurf oder Vorprüfung selbst übernehmen, während Entscheidung oder formale Freigabe beim Spezialisten bleibt. Diese Trennung ist der Kern der **Verantwortungsgrenze**.
 
 ### P5 – Wiederholung macht aus Experimenten neue Arbeit
 
@@ -78,7 +78,17 @@ Gesucht werden Tätigkeiten, die heute an Spezialisten übergeben werden, obwohl
 
 **Output**: Kandidatenliste mit Herkunftsbereich.
 
-### Schritt 3 – Expansion Potential bewerten
+### Schritt 3 – Übernahmepotenzial bewerten
+
+Die Eingabe ist im UI bewusst in drei Entscheidungsblöcke gegliedert, damit die Kriterien nicht als gleichartige Checkliste erscheinen:
+
+| Bewertungsblock | Kriterien | Kernfrage |
+| --- | --- | --- |
+| **1. Nutzen & Prozesshebel** | Business Value, Handoff Friction, Recurrence | Lohnt es sich überhaupt, diese Aufgabe neu zu organisieren? |
+| **2. Eignung für KI-gestützte Übernahme** | Context Proximity, AI Leverage, Data Readiness | Kann diese Rolle die Aufgabe mit KI sinnvoll selbst übernehmen? |
+| **3. Verantwortung & Grenze** | Judgment Stakes, Specialist Accountability | Wo muss fachliche Verantwortung oder Freigabe bestehen bleiben? |
+
+Die ersten beiden Blöcke speisen das **Übernahmepotenzial**. Der dritte Block bildet die **Verantwortungsgrenze** separat ab.
 
 Die App nutzt sechs Kriterien auf einer Skala 0–4:
 
@@ -99,7 +109,7 @@ Expansion Potential = Σ(Kriterium_0..4 × Gewicht) / 4 × 100
 
 Die Gewichte sind **Designheuristik**, nicht aus den Quellen statistisch geschätzt.
 
-### Schritt 4 – Human Boundary bewerten
+### Schritt 4 – Verantwortungsgrenze bewerten
 
 Zwei getrennte Dimensionen:
 
@@ -111,10 +121,10 @@ Zwei getrennte Dimensionen:
 Formel:
 
 ```text
-Human Boundary = Σ(Kriterium_0..4 × Gewicht) / 4 × 100
+Verantwortungsgrenze = Σ(Kriterium_0..4 × Gewicht) / 4 × 100
 ```
 
-Wichtig: Eine hohe Human Boundary spricht **nicht gegen** die Aufgabenverschiebung. Sie spricht gegen eine unkontrollierte Verschiebung der Verantwortung.
+Wichtig: Eine hohe Verantwortungsgrenze spricht **nicht gegen** die Aufgabenverschiebung. Sie spricht gegen eine unkontrollierte Verschiebung der Verantwortung.
 
 ### Schritt 5 – AI-Arbeitsmodus designen
 
@@ -169,7 +179,7 @@ Skalierung bedeutet:
 
 ## 4. Entscheidungslogik der App
 
-| Expansion Potential | Human Boundary | Arbeitsentscheidung |
+| Übernahmepotenzial | Verantwortungsgrenze | Arbeitsentscheidung |
 | ---: | ---: | --- |
 | ≥ 70 | < 40 | **Übernehmen + pilotieren** – direkte Rollenerweiterung innerhalb definierter Leitplanken |
 | ≥ 70 | 40–74 | **Übernehmen + Fachfreigabe** – Ausführung wandert, Entscheidung/Freigabe bleibt |
