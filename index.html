@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">TASKSHIFT · v1.3</div>
+        <div class="eyebrow">TASKSHIFT · v1.4</div>
         <h1>Neue Aufgabenfelder</h1>
         <p>Von „KI macht Aufgaben schneller“ zu „wer kann welche Arbeit künftig selbst übernehmen?“</p>
       </div>
@@ -103,7 +103,7 @@
               <input id="taskName" type="text" placeholder="z. B. Vertragskonditionen vorprüfen" />
             </label>
             <label>Heutiger Herkunftsbereich
-              <div class="chip-picker" id="sourceAreaPicker"></div>
+              <select class="select-input" id="sourceAreaPicker" aria-label="Heutiger Herkunftsbereich"></select>
             </label>
             <label>Wer behält ggf. die Fachfreigabe?
               <input id="approvalOwner" type="text" placeholder="z. B. Legal, Finance, IT" />
@@ -128,7 +128,7 @@
               <div class="step-badge">3</div>
               <h2>Rollen-Szenario</h2>
             </div>
-            <span class="hint">Kein Beschäftigungs-Forecast</span>
+            <span class="hint">Szenario, keine Prognose</span>
           </div>
           <div class="form-grid two align-center">
             <label>Wenn KI die Leistung günstiger/schneller macht: Wie stark könnte zusätzliche Nachfrage entstehen?
@@ -198,11 +198,11 @@
         </section>
 
         <section class="panel note-panel">
-          <h2>Was die App bewusst nicht macht</h2>
+          <h2>Methodische Grenzen</h2>
           <ul>
-            <li>Sie sagt nicht vorher, welche Stellen verschwinden.</li>
-            <li>Sie behandelt technische KI-Fähigkeit nicht als automatische organisatorische Berechtigung.</li>
-            <li>Sie ersetzt keine rechtliche, regulatorische oder fachliche Freigabe.</li>
+            <li>Der Fokus liegt auf der Gestaltung von Aufgaben, Rollen und Verantwortungsgrenzen.</li>
+            <li>Technische KI-Fähigkeit allein begründet noch keine organisatorische Aufgabenübernahme.</li>
+            <li>Rechtliche, regulatorische und fachliche Freigaben bleiben eigenständige Anforderungen.</li>
             <li>Die Gewichtung ist eine nachvollziehbare Designheuristik – kein wissenschaftlich validiertes Scoring-Modell.</li>
           </ul>
         </section>
@@ -227,8 +227,8 @@
             </article>
             <article class="evidence-card">
               <span class="evidence-type empirical">Empirisch + Framework</span>
-              <h3>Jobs reorganisieren sich häufig vor ihrem Verschwinden</h3>
-              <p>Das OpenAI Jobs Transition Framework trennt technische Aufgabenexposition von menschlicher Zentralität und Nachfrageeffekten. Für die Praxis ist deshalb die Frage zentral, welche Aufgaben delegiert werden und wo Verantwortung/Urteil beim Menschen bleiben.</p>
+              <h3>Technische Fähigkeit ist nicht gleich organisatorische Wirkung</h3>
+              <p>Das OpenAI Jobs Transition Framework trennt technische Aufgabenexposition von menschlicher Zentralität und Nachfrageeffekten. Für die Praxis ist deshalb die Frage zentral, welche Aufgaben delegiert werden und wo Verantwortung und Urteil beim Menschen bleiben.</p>
               <a href="https://openai.com/index/modeling-ai-jobs-transition/" target="_blank" rel="noreferrer">OpenAI · 25.04.2026</a>
             </article>
             <article class="evidence-card">
