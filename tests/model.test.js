@@ -23,6 +23,24 @@ assert.equal(M.recommendation(task({businessValue:4,handoffFriction:4,contextPro
 assert.equal(M.aiMode(task({aiLeverage:4,recurrence:4,dataReadiness:4,judgmentStakes:1,specialistAccountability:1})).key, 'delegation');
 assert.equal(M.readinessScore({rules:true,data:true,metrics:false,manager:false}), 50);
 
+const incomplete = task();
+delete incomplete.aiLeverage;
+assert.equal(M.validateTask(incomplete).complete, false);
+assert.equal(M.expansionPotential(incomplete), null);
+assert.equal(M.humanBoundary(incomplete), null);
+assert.equal(M.recommendation(incomplete), null);
+assert.equal(M.enrichTask(incomplete, {}).recommendation, null);
+
+const guardedRecipe = M.transformationRecipe(task({
+  handoffFriction:4,
+  recurrence:4,
+  contextProximity:4,
+  judgmentStakes:4,
+  specialistAccountability:4
+}));
+assert.equal(guardedRecipe.key, 'process-redesign');
+assert.match(guardedRecipe.control, /Freigabepunkt/);
+
 const report = M.markdownReport({
   profile:{
     role:'Testrolle',
@@ -30,8 +48,7 @@ const report = M.markdownReport({
     organization:'mittel',
     readiness:{rules:true,data:true,metrics:true,manager:true}
   },
-  tasks:[task({approvalOwner:'Finance', notes:'Analyse selbst, Freigabe bei Finance.'})],
-  demandPotential:2
+  tasks:[task({approvalOwner:'Finance', notes:'Analyse selbst, Freigabe bei Finance.'})]
 });
 assert.match(report, /# Neue Aufgabenfelder – Testrolle/);
 assert.match(report, /## Ausgangslage/);
@@ -40,6 +57,10 @@ assert.match(report, /## Gemeinsame Erfolgsmessung/);
 assert.match(report, /Übernahmepotenzial/);
 assert.match(report, /Verantwortungsgrenze/);
 assert.doesNotMatch(report, /Human Boundary/);
+assert.doesNotMatch(report, /Rollen-Szenario/);
+assert.equal(M.roleTransition, undefined);
+assert.match(report, /Tatsächliche Wiederholungen im Pilotzeitraum/);
+assert.match(report, /Kontrollpunkt/);
 assert.doesNotMatch(report, /schnellere entscheidungen.*verbessert sich/i);
 
 console.log('model tests: OK');
