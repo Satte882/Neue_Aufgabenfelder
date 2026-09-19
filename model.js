@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
 
   const WEIGHTS = Object.freeze({
     businessValue: 0.24,
@@ -240,14 +240,24 @@
     const recipe = transformationRecipe(task);
     const owner = (task.approvalOwner || '').trim() || 'zuständiger Spezialist';
     const role = (profile && profile.role || '').trim() || 'die Rolle';
-    const outcome = (profile && profile.outcome || '').trim() || 'das gewünschte Geschäftsergebnis';
 
     const approval = rec.key === 'own'
       ? `Die Rolle „${role}“ darf innerhalb dokumentierter Leitplanken selbst abschließen; Ausnahmen eskalieren.`
       : `Analyse und Vorbereitung bei „${role}“, fachliche Entscheidung/Freigabe bei ${owner}.`;
 
+    let hypothesis;
+    if (rec.key === 'own') {
+      hypothesis = `Wenn „${role}“ die Aufgabe „${task.name}“ mit KI innerhalb definierter Leitplanken selbst übernimmt, reduzieren sich Handoffs und Durchlaufzeit, ohne dass Qualität oder Kontrollanforderungen schlechter werden.`;
+    } else if (rec.key === 'explore') {
+      hypothesis = `Wenn „${role}“ die Aufgabe „${task.name}“ in realen Fällen mit KI testet, lässt sich belastbar bestimmen, welche Arbeit künftig selbst übernommen werden kann und wo eine Fachfreigabe erforderlich bleibt.`;
+    } else if (rec.key === 'keep-handoff') {
+      hypothesis = `Ein Pilot für „${task.name}“ ist erst sinnvoll, wenn Datenlage, KI-Eignung oder Prozessfriktion ausreichend verbessert wurden.`;
+    } else {
+      hypothesis = `Wenn „${role}“ Analyse und Vorbereitung für „${task.name}“ mit KI selbst übernimmt und die Fachfreigabe bei ${owner} bleibt, reduzieren sich Handoffs und Durchlaufzeit, ohne die fachliche Verantwortungsgrenze aufzuweichen.`;
+    }
+
     return {
-      hypothesis: `Wenn „${role}“ die Aufgabe „${task.name}“ mit KI näher am Problem übernimmt, sinkt Handoff-Reibung und ${outcome.toLowerCase()} verbessert sich, ohne die fachliche Verantwortungsgrenze aufzuweichen.`,
+      hypothesis,
       scope: '2–4 Wochen mit realen Fällen; zunächst klein genug, dass jeder Fehler nachvollziehbar bleibt.',
       baseline: 'Vor Start aktuelle Durchlaufzeit, aktive Bearbeitungszeit, Handoffs und Nacharbeit erfassen.',
       mode: `${mode.label}: ${mode.description}`,
@@ -299,54 +309,107 @@
     const items = portfolio(state.tasks || [], profile);
     const readiness = readinessScore(profile.readiness || {});
     const transition = roleTransition(state.tasks || [], state.demandPotential);
+    const role = (profile.role || '').trim() || 'Analyse';
+    const orgLabels = { klein: 'Klein', mittel: 'Mittel', gross: 'Groß' };
     const lines = [];
 
-    lines.push('# Neue Aufgabenfelder – Analyse');
+    function mdCell(value) {
+      return String(value == null || value === '' ? '–' : value)
+        .replace(/\|/g, '\\|')
+        .replace(/[\r\n]+/g, ' ')
+        .trim();
+    }
+
+    lines.push(`# Neue Aufgabenfelder – ${role}`);
     lines.push('');
-    lines.push(`**Rolle:** ${profile.role || '–'}`);
-    lines.push(`**Geschäftsergebnis:** ${profile.outcome || '–'}`);
-    lines.push(`**Organisations-Reife:** ${readiness}%`);
-    lines.push(`**Szenario Rollenentwicklung:** ${transition.label}`);
+    lines.push('## Ausgangslage');
     lines.push('');
-    lines.push('> Hinweis: Die Scores sind eine transparente Entscheidungsheuristik, keine empirisch validierte Prognose.');
+    lines.push('| Feld | Wert |');
+    lines.push('| --- | --- |');
+    lines.push(`| Rolle | ${mdCell(profile.role)} |`);
+    lines.push(`| Geschäftsergebnis | ${mdCell(profile.outcome)} |`);
+    lines.push(`| Organisationsgröße | ${mdCell(orgLabels[profile.organization] || profile.organization)} |`);
+    lines.push(`| Skalierungsreife | ${readiness}% |`);
+    lines.push(`| Rollen-Szenario | ${mdCell(transition.label)} |`);
     lines.push('');
-    lines.push('## Portfolio');
+    lines.push('> Methodischer Hinweis: Übernahmepotenzial und Verantwortungsgrenze sind transparente Entscheidungsheuristiken, keine empirisch validierte Prognose.');
     lines.push('');
-    lines.push('| Aufgabe | Herkunft | Potenzial | Human Boundary | Empfehlung | AI-Modus |');
-    lines.push('| --- | --- | ---: | ---: | --- | --- |');
+
+    lines.push('## Ergebnisübersicht');
+    lines.push('');
+    lines.push('| Aufgabe | Empfehlung | Fachfreigabe |');
+    lines.push('| --- | --- | --- |');
     for (const t of items) {
-      lines.push(`| ${t.name} | ${t.sourceArea || '–'} | ${t.potential}% | ${t.boundary}% | ${t.recommendation.label} | ${t.aiMode.label} |`);
+      lines.push(`| ${mdCell(t.name)} | ${mdCell(t.recommendation.label)} | ${mdCell(t.approvalOwner || 'nicht definiert')} |`);
+    }
+    if (!items.length) {
+      lines.push('| Noch keine Aufgabe bewertet | – | – |');
     }
     lines.push('');
 
+    lines.push('## Aufgaben im Detail');
+    lines.push('');
     for (const t of items) {
-      lines.push(`## ${t.name}`);
+      const p = t.pilot;
+      lines.push(`### ${t.name}`);
       lines.push('');
-      lines.push(`**Empfehlung:** ${t.recommendation.label}`);
-      lines.push(`**Begründung:** ${t.recommendation.rationale}`);
-      lines.push(`**Arbeitsmodus:** ${t.aiMode.label}`);
-      lines.push(`**Transformationsrezept:** ${t.recipe.label}`);
-      lines.push(`**Freigabegrenze:** ${t.pilot.humanBoundary}`);
+      lines.push('**Empfehlung**');
       lines.push('');
-      lines.push(`**Pilothypothese:** ${t.pilot.hypothesis}`);
+      lines.push(t.recommendation.label);
       lines.push('');
-      lines.push('**Messung:**');
-      for (const m of t.pilot.metrics) lines.push(`- ${m}`);
+      lines.push('**Begründung**');
       lines.push('');
-      lines.push(`**Scale Gate:** ${t.pilot.gate}`);
-      if (t.notes) lines.push(`\n**Notiz:** ${t.notes}`);
+      lines.push(t.recommendation.rationale);
+      lines.push('');
+      lines.push('**Neue Aufgabenteilung**');
+      lines.push('');
+      if (t.notes) lines.push(`- Vorgesehene Aufgabenteilung: ${t.notes}`);
+      lines.push(`- Herkunftsbereich: ${t.sourceArea || '–'}`);
+      lines.push(`- Fachfreigabe: ${t.approvalOwner || 'nicht definiert'}`);
+      lines.push(`- Verantwortungsgrenze: ${p.humanBoundary}`);
+      lines.push('');
+      lines.push('**Pilot**');
+      lines.push('');
+      lines.push(`- Hypothese: ${p.hypothesis}`);
+      lines.push(`- Umfang: ${p.scope}`);
+      lines.push(`- Baseline: ${p.baseline}`);
+      lines.push(`- Scale Gate: ${p.gate}`);
       lines.push('');
     }
 
-    lines.push('## Methodischer Kern');
+    lines.push('## Gemeinsame Erfolgsmessung');
     lines.push('');
-    lines.push('1. Geschäftsergebnis vor Tool-Auswahl.');
-    lines.push('2. Arbeit und Handoffs sichtbar machen.');
-    lines.push('3. Aufgabenüberschreitungen als Kandidaten identifizieren.');
-    lines.push('4. Menschliche Urteils- und Freigabegrenzen explizit festlegen.');
-    lines.push('5. Passenden AI-Arbeitsmodus wählen: Asking, Collaboration, Delegation oder Exploration.');
-    lines.push('6. Mit realen Fällen pilotieren und Wiederholung beobachten.');
-    lines.push('7. Nur bei messbarem Wert plus stabilen Guardrails standardisieren und skalieren.');
+    const metrics = items.length ? items[0].pilot.metrics : [
+      'End-to-End-Durchlaufzeit',
+      'Anzahl der Handoffs / Rückfragen',
+      'Nacharbeit oder Korrekturquote',
+      'Fachliche Freigabequote beim ersten Review',
+      'Zeit bis zur entscheidungsfähigen Vorlage',
+    ];
+    for (const metric of metrics) lines.push(`- ${metric}`);
+    lines.push('');
+
+    if (items.length) {
+      lines.push('## Methodische Einordnung');
+      lines.push('');
+      lines.push('| Aufgabe | Übernahmepotenzial | Verantwortungsgrenze | Arbeitsmodus | Designmuster |');
+      lines.push('| --- | ---: | ---: | --- | --- |');
+      for (const t of items) {
+        lines.push(`| ${mdCell(t.name)} | ${t.potential}/100 | ${t.boundary}/100 | ${mdCell(t.aiMode.label)} | ${mdCell(t.recipe.label)} |`);
+      }
+      lines.push('');
+    }
+
+    lines.push('## Vorgehensmodell');
+    lines.push('');
+    lines.push('1. Geschäftsergebnis und Baseline definieren.');
+    lines.push('2. Arbeit, Handoffs, Wartezeiten und Entscheidungsrechte sichtbar machen.');
+    lines.push('3. Kandidaten für neue Aufgabenfelder identifizieren.');
+    lines.push('4. Verantwortung und Freigabegrenzen explizit festlegen.');
+    lines.push('5. Passenden KI-Arbeitsmodus bestimmen.');
+    lines.push('6. Mit realen Fällen pilotieren und End-to-End-Wert messen.');
+    lines.push('7. Wiederholung und stabilen Qualitätsstandard prüfen.');
+    lines.push('8. Nur bei messbarem Wert und stabilen Leitplanken standardisieren und skalieren.');
     lines.push('');
     lines.push('Erstellt mit Neue Aufgabenfelder / TASKSHIFT.');
 
