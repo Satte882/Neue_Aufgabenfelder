@@ -4,16 +4,39 @@
   const M = window.TaskShiftModel;
   const STORAGE_KEY = 'neue-aufgabenfelder-taskshift-v1';
 
-  const CRITERIA = [
-    { key: 'businessValue', title: 'Business Value', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
-    { key: 'handoffFriction', title: 'Handoff Friction', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
-    { key: 'contextProximity', title: 'Context Proximity', desc: 'Wie nah ist die Rolle am Problem, an den Daten und an der Entscheidungssituation?', low: 'fern', high: 'nah' },
-    { key: 'aiLeverage', title: 'AI Leverage', desc: 'Wie gut kann KI Analyse, Entwurf, Vergleich, Prüfung oder Ausführung unterstützen?', low: 'gering', high: 'hoch' },
-    { key: 'recurrence', title: 'Recurrence', desc: 'Wie regelmäßig tritt die Aufgabe auf und lohnt damit ein stabiler Arbeitsmodus?', low: 'selten', high: 'häufig' },
-    { key: 'dataReadiness', title: 'Data Readiness', desc: 'Sind relevante Informationen in ausreichender Qualität und Zugänglichkeit vorhanden?', low: 'schwach', high: 'gut' },
-    { key: 'judgmentStakes', title: 'Judgment Stakes', desc: 'Wie schwer wiegen Fehlurteile, Ausnahmen, Kundenwirkung oder irreversible Entscheidungen?', low: 'gering', high: 'kritisch', boundary: true },
-    { key: 'specialistAccountability', title: 'Specialist Accountability', desc: 'Wie stark ist formale Fachverantwortung, Freigabe oder Spezialistenwissen zwingend?', low: 'gering', high: 'zwingend', boundary: true },
+  const CRITERIA_GROUPS = [
+    {
+      key: 'value',
+      title: '1. Nutzen & Prozesshebel',
+      question: 'Lohnt es sich überhaupt, diese Aufgabe neu zu organisieren?',
+      criteria: [
+        { key: 'businessValue', title: 'Business Value', desc: 'Wie stark trägt die Aufgabe zum gewünschten Geschäftsergebnis bei?', low: 'niedrig', high: 'hoch' },
+        { key: 'handoffFriction', title: 'Handoff Friction', desc: 'Wie viel Wartezeit, Rückfragen oder Reibung erzeugt die heutige Übergabe?', low: 'kaum', high: 'hoch' },
+        { key: 'recurrence', title: 'Recurrence', desc: 'Wie regelmäßig tritt die Aufgabe auf und lohnt damit ein stabiler Arbeitsmodus?', low: 'selten', high: 'häufig' },
+      ],
+    },
+    {
+      key: 'fit',
+      title: '2. Eignung für KI-gestützte Übernahme',
+      question: 'Kann diese Rolle die Aufgabe mit KI sinnvoll selbst übernehmen?',
+      criteria: [
+        { key: 'contextProximity', title: 'Context Proximity', desc: 'Wie nah ist die Rolle am Problem, an den Daten und an der Entscheidungssituation?', low: 'fern', high: 'nah' },
+        { key: 'aiLeverage', title: 'AI Leverage', desc: 'Wie gut kann KI Analyse, Entwurf, Vergleich, Prüfung oder Ausführung unterstützen?', low: 'gering', high: 'hoch' },
+        { key: 'dataReadiness', title: 'Data Readiness', desc: 'Sind relevante Informationen in ausreichender Qualität und Zugänglichkeit vorhanden?', low: 'schwach', high: 'gut' },
+      ],
+    },
+    {
+      key: 'boundary',
+      title: '3. Verantwortung & Grenze',
+      question: 'Wo muss fachliche Verantwortung oder Freigabe bestehen bleiben?',
+      criteria: [
+        { key: 'judgmentStakes', title: 'Judgment Stakes', desc: 'Wie schwer wiegen Fehlurteile, Ausnahmen, Kundenwirkung oder irreversible Entscheidungen?', low: 'gering', high: 'kritisch' },
+        { key: 'specialistAccountability', title: 'Specialist Accountability', desc: 'Wie stark ist formale Fachverantwortung, Freigabe oder Spezialistenwissen zwingend?', low: 'gering', high: 'zwingend' },
+      ],
+    },
   ];
+
+  const CRITERIA = CRITERIA_GROUPS.flatMap((group) => group.criteria);
 
   function defaultState() {
     return {
@@ -109,13 +132,25 @@
   }
 
   function renderCriteria() {
-    $('criteriaGrid').innerHTML = CRITERIA.map((c) => {
-      const val = Number(state.draft[c.key] ?? 2);
-      return `<div class="criterion">
-        <div class="criterion-head"><div><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p></div><span class="level-value" id="value-${c.key}">${val}</span></div>
-        <input type="range" min="0" max="4" step="1" value="${val}" data-criterion="${c.key}" aria-label="${esc(c.title)}" />
-        <div class="range-labels"><span>${esc(c.low)}</span><span>${esc(c.high)}</span></div>
-      </div>`;
+    $('criteriaGrid').innerHTML = CRITERIA_GROUPS.map((group) => {
+      const cards = group.criteria.map((criterion) => {
+        const val = Number(state.draft[criterion.key] ?? 2);
+        return `<div class="criterion">
+          <div class="criterion-head"><div><h4>${esc(criterion.title)}</h4><p>${esc(criterion.desc)}</p></div><span class="level-value" id="value-${criterion.key}">${val}</span></div>
+          <input type="range" min="0" max="4" step="1" value="${val}" data-criterion="${criterion.key}" aria-label="${esc(criterion.title)}" />
+          <div class="range-labels"><span>${esc(criterion.low)}</span><span>${esc(criterion.high)}</span></div>
+        </div>`;
+      }).join('');
+
+      return `<section class="criteria-section" aria-labelledby="criteria-${group.key}">
+        <div class="criteria-section-head">
+          <div>
+            <h3 id="criteria-${group.key}">${esc(group.title)}</h3>
+            <p>${esc(group.question)}</p>
+          </div>
+        </div>
+        <div class="criteria-section-grid">${cards}</div>
+      </section>`;
     }).join('');
 
     $('criteriaGrid').querySelectorAll('input[type="range"]').forEach((input) => {
@@ -140,11 +175,25 @@
 
   function renderLivePreview() {
     const t = M.enrichTask(currentDraftTask(), state.profile);
-    $('livePreview').innerHTML = `<div class="preview-grid">
-      <div class="score-box"><strong>${t.potential}%</strong><span>Expansion</span></div>
-      <div class="score-box"><strong>${t.boundary}%</strong><span>Human Boundary</span></div>
-      <div class="preview-copy"><strong>${esc(t.recommendation.label)}</strong><p>${esc(t.recommendation.rationale)}</p></div>
-      <div class="preview-copy"><strong>${esc(t.aiMode.label)} · ${esc(t.recipe.label)}</strong><p>${esc(t.aiMode.description)}</p></div>
+    $('livePreview').innerHTML = `<div class="recommendation-preview">
+      <div class="recommendation-copy">
+        <span class="preview-kicker">Empfehlung</span>
+        <strong>${esc(t.recommendation.label)}</strong>
+        <p>${esc(t.recommendation.rationale)}</p>
+      </div>
+      <details class="info-popover preview-info">
+        <summary aria-label="Methodische Details anzeigen" title="Methodische Details">?</summary>
+        <div class="info-popover-card">
+          <h4>Methodische Details</h4>
+          <dl>
+            <div><dt>Übernahmepotenzial</dt><dd>${t.potential}/100</dd></div>
+            <div><dt>Verantwortungsgrenze</dt><dd>${t.boundary}/100</dd></div>
+            <div><dt>Arbeitsmodus</dt><dd>${esc(t.aiMode.label)}</dd></div>
+            <div><dt>Designmuster</dt><dd>${esc(t.recipe.label)}</dd></div>
+          </dl>
+          <p>${esc(t.aiMode.description)}</p>
+        </div>
+      </details>
     </div>`;
   }
 
@@ -222,7 +271,7 @@
     const readiness = M.readinessScore(state.profile.readiness);
 
     $('portfolioSummary').innerHTML = `
-      <div class="summary-card"><strong>${avgPotential}%</strong><span>Ø Expansion Potential</span></div>
+      <div class="summary-card"><strong>${avgPotential}%</strong><span>Ø Übernahmepotenzial</span></div>
       <div class="summary-card"><strong>${strong}</strong><span>direkte Rollenerweiterungs-Kandidaten</span></div>
       <div class="summary-card"><strong>${guarded}</strong><span>nur mit klarer Fachfreigabe / Vorbereitung</span></div>
       <div class="summary-card"><strong>${explore}</strong><span>gezielt explorieren</span></div>
