@@ -284,9 +284,18 @@
           <div><h3>${idx + 1}. ${esc(t.name)}</h3><p>Heute typischerweise: ${esc(t.sourceArea || '–')} · Fachfreigabe: ${esc(t.approvalOwner || 'nicht definiert')}</p></div>
           <div class="task-badges">
             <span class="badge ${toneClass(t.recommendation)}">${esc(t.recommendation.label)}</span>
-            <span class="badge">${t.potential}% Potenzial</span>
-            <span class="badge">${t.boundary}% Boundary</span>
-            <span class="badge">${esc(t.aiMode.label)}</span>
+            <details class="info-popover task-info">
+              <summary aria-label="Methodische Details zu ${esc(t.name)} anzeigen" title="Methodische Details">?</summary>
+              <div class="info-popover-card">
+                <h4>Methodische Details</h4>
+                <dl>
+                  <div><dt>Übernahmepotenzial</dt><dd>${t.potential}/100</dd></div>
+                  <div><dt>Verantwortungsgrenze</dt><dd>${t.boundary}/100</dd></div>
+                  <div><dt>Arbeitsmodus</dt><dd>${esc(t.aiMode.label)}</dd></div>
+                  <div><dt>Designmuster</dt><dd>${esc(t.recipe.label)}</dd></div>
+                </dl>
+              </div>
+            </details>
           </div>
         </div>
         <div class="task-detail">
