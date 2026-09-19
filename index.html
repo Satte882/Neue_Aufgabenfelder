@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Interaktive App zur KI-gestützten Erweiterung von Aufgabenfeldern und zur Gestaltung klarer Human-AI-Verantwortungsgrenzen." />
+  <title>Neue Aufgabenfelder – TASKSHIFT</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">TASKSHIFT · v1.0</div>
+        <h1>Neue Aufgabenfelder</h1>
+        <p>Von „KI macht Aufgaben schneller“ zu „wer kann welche Arbeit künftig selbst übernehmen?“</p>
+      </div>
+      <div class="top-actions" aria-label="App-Aktionen">
+        <button class="btn secondary" id="loadDemoBtn">Demo laden</button>
+        <button class="btn secondary" id="exportBtn">Markdown exportieren</button>
+        <button class="btn secondary" id="printBtn">Drucken / PDF</button>
+        <button class="btn danger ghost" id="resetBtn">Zurücksetzen</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Hauptnavigation">
+      <button class="tab active" data-tab="analyse">Analyse</button>
+      <button class="tab" data-tab="portfolio">Portfolio</button>
+      <button class="tab" data-tab="method">Vorgehensmodell</button>
+      <button class="tab" data-tab="evidence">Evidenz</button>
+    </nav>
+
+    <main>
+      <section class="tab-panel active" id="tab-analyse">
+        <div class="hero-grid">
+          <article class="hero-card">
+            <div class="eyebrow">Zielbild</div>
+            <h2>Arbeit näher an die Person bringen, die das Problem zuerst erkennt.</h2>
+            <p>Die App prüft neue Aufgaben nicht danach, ob KI sie theoretisch kann, sondern ob eine Rollenerweiterung geschäftlich sinnvoll ist, wo menschliches Urteil zentral bleibt und wie ein belastbarer Pilot aussieht.</p>
+          </article>
+          <article class="stats-card" aria-label="Evidenz-Schnellüberblick">
+            <div class="stat"><strong>43,5%</strong><span>der nicht-generischen berufsspezifischen ChatGPT-Nutzung lag in einer OpenAI-Analyse außerhalb des eigenen Berufs.</span></div>
+            <div class="stat"><strong>23,6%</strong><span>kehrten im Folgemonat zu einer bereits genutzten berufsfremden Aufgabe zurück (beobachtete Teilstichprobe).</span></div>
+            <div class="stat"><strong>50%</strong><span>nannten Qualitätskontrolle als wichtiger werdende menschliche Fähigkeit; 46% kritisches Denken.</span></div>
+          </article>
+        </div>
+
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <div class="step-badge">1</div>
+              <h2>Rolle und Geschäftsergebnis</h2>
+            </div>
+            <span class="hint">Business Outcome vor Tool-Auswahl</span>
+          </div>
+          <div class="form-grid two">
+            <label>Rolle
+              <input id="roleInput" type="text" placeholder="z. B. Produktmanager Touristik" />
+            </label>
+            <label>Organisationsgröße
+              <div class="segmented" id="orgButtons">
+                <button type="button" data-value="klein">Klein</button>
+                <button type="button" data-value="mittel" class="active">Mittel</button>
+                <button type="button" data-value="gross">Groß</button>
+              </div>
+            </label>
+          </div>
+          <label>Welches Geschäftsergebnis soll besser werden?
+            <textarea id="outcomeInput" rows="2" placeholder="z. B. Entscheidungsdurchlaufzeit senken, ohne Freigabequalität zu verlieren"></textarea>
+          </label>
+
+          <div class="readiness-block">
+            <div>
+              <h3>Skalierungs-Reife</h3>
+              <p>Vier Mindestbedingungen für einen wiederholbaren Arbeitsmodus.</p>
+            </div>
+            <div class="check-grid">
+              <label class="check-card"><input type="checkbox" id="readyRules" /><span><strong>Leitplanken</strong>Freigaben und Eskalationen sind klar.</span></label>
+              <label class="check-card"><input type="checkbox" id="readyData" /><span><strong>Daten</strong>Die relevanten Quellen sind zugänglich.</span></label>
+              <label class="check-card"><input type="checkbox" id="readyMetrics" /><span><strong>Messung</strong>Baseline und Business-KPI sind definiert.</span></label>
+              <label class="check-card"><input type="checkbox" id="readyManager" /><span><strong>Mandat</strong>Manager/Owner unterstützt den neuen Arbeitsmodus.</span></label>
+            </div>
+            <div class="readiness-meter"><div id="readinessBar"></div></div>
+            <div class="meter-caption"><span>Skalierungs-Reife</span><strong id="readinessValue">0%</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <div class="step-badge">2</div>
+              <h2>Neue Aufgabe bewerten</h2>
+            </div>
+            <span class="hint">Task Crossover + Human Boundary</span>
+          </div>
+
+          <div class="form-grid two">
+            <label>Neue Aufgabe
+              <input id="taskName" type="text" placeholder="z. B. Vertragskonditionen vorprüfen" />
+            </label>
+            <label>Heutiger Herkunftsbereich
+              <div class="chip-picker" id="sourceAreaPicker"></div>
+            </label>
+            <label>Wer behält ggf. die Fachfreigabe?
+              <input id="approvalOwner" type="text" placeholder="z. B. Legal, Finance, IT" />
+            </label>
+            <label>Notiz zur gewünschten Aufgabenteilung
+              <input id="taskNotes" type="text" placeholder="z. B. Analyse selbst, Freigabe bei Legal" />
+            </label>
+          </div>
+
+          <div class="criteria-grid" id="criteriaGrid"></div>
+
+          <div class="live-preview" id="livePreview" aria-live="polite"></div>
+          <div class="action-row">
+            <button class="btn primary" id="addTaskBtn">Aufgabe ins Portfolio übernehmen</button>
+            <button class="btn ghost" id="clearTaskBtn">Eingabe leeren</button>
+          </div>
+        </section>
+
+        <section class="panel compact">
+          <div class="section-heading">
+            <div>
+              <div class="step-badge">3</div>
+              <h2>Rollen-Szenario</h2>
+            </div>
+            <span class="hint">Kein Beschäftigungs-Forecast</span>
+          </div>
+          <div class="form-grid two align-center">
+            <label>Wenn KI die Leistung günstiger/schneller macht: Wie stark könnte zusätzliche Nachfrage entstehen?
+              <input type="range" id="demandPotential" min="0" max="4" value="2" step="1" />
+              <div class="range-labels"><span>gering</span><span>hoch</span></div>
+            </label>
+            <div class="scenario-card" id="transitionScenario"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="tab-panel" id="tab-portfolio">
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <div class="step-badge">4</div>
+              <h2>Aufgabenfeld-Portfolio</h2>
+            </div>
+            <span class="hint" id="portfolioCount">0 Aufgaben</span>
+          </div>
+
+          <div class="portfolio-layout">
+            <div class="quadrant-wrap">
+              <div class="axis-y">Human Boundary ↑</div>
+              <div class="quadrant" id="quadrantPlot" aria-label="Portfolio-Matrix">
+                <div class="q-label q-top-left">Vorbereiten<br><small>Fachfreigabe bleibt</small></div>
+                <div class="q-label q-top-right">Übernehmen + Freigabe<br><small>hoher Nutzen, hohe Verantwortung</small></div>
+                <div class="q-label q-bottom-left">Handoff / später<br><small>geringer Erweiterungsnutzen</small></div>
+                <div class="q-label q-bottom-right">Übernehmen<br><small>hoher Nutzen, klare Leitplanken</small></div>
+                <div class="midline vertical"></div>
+                <div class="midline horizontal"></div>
+                <div id="plotPoints"></div>
+              </div>
+              <div class="axis-x">Expansion Potential →</div>
+            </div>
+            <div class="portfolio-summary" id="portfolioSummary"></div>
+          </div>
+
+          <div class="task-list" id="taskList"></div>
+        </section>
+      </section>
+
+      <section class="tab-panel" id="tab-method">
+        <section class="panel">
+          <div class="eyebrow">TASKSHIFT</div>
+          <h2>Vorgehensmodell: vom Task Crossover zum neuen Arbeitsmodus</h2>
+          <p class="lead">Das Modell verbindet OpenAI-Befunde zur Aufgabenüberschreitung und Rollenreorganisation mit Microsofts Ansatz „Business Outcome → Work Redesign → Capability Add → Learning System“.</p>
+          <div class="timeline">
+            <article><span>0</span><div><h3>Outcome setzen</h3><p>Ein konkretes Geschäftsergebnis definieren. Kein „KI einsetzen“ als Ziel.</p><em>Artefakt: Outcome + Baseline-KPI</em></div></article>
+            <article><span>1</span><div><h3>Arbeit sichtbar machen</h3><p>Handoffs, Wartezeiten, Ausnahmen, Entscheidungsrechte und Datenquellen erfassen.</p><em>Artefakt: schlanke End-to-End-Map</em></div></article>
+            <article><span>2</span><div><h3>Task-Crossover-Kandidaten finden</h3><p>Fragen: Wo erkennt eine Rolle das Problem zuerst? Welche Arbeit wird heute nur wegen Fachgrenzen weitergereicht?</p><em>Artefakt: Kandidatenliste</em></div></article>
+            <article><span>3</span><div><h3>Human Boundary festlegen</h3><p>Trennen zwischen Ausführung, Beurteilung, Ausnahmebehandlung, Entscheidung und formaler Freigabe.</p><em>Artefakt: Freigabegrenzen-Matrix</em></div></article>
+            <article><span>4</span><div><h3>AI-Arbeitsmodus designen</h3><p>Asking, Collaboration, Delegation oder Exploration – abhängig von Wiederholung, Datenlage und Urteilsbedarf.</p><em>Artefakt: Human-AI-Workflow</em></div></article>
+            <article><span>5</span><div><h3>Mit realen Fällen pilotieren</h3><p>Nicht Prompt-Qualität, sondern End-to-End-Wert messen: Durchlaufzeit, Handoffs, Qualität, Nacharbeit.</p><em>Artefakt: Pilot + Eval-Set</em></div></article>
+            <article><span>6</span><div><h3>Wiederholung prüfen</h3><p>Ein einmaliger Erfolg ist noch kein neues Aufgabenfeld. Entscheidend ist, ob die Aufgabe verlässlich in den Arbeitsalltag zurückkehrt.</p><em>Artefakt: Recurrence-Evidence</em></div></article>
+            <article><span>7</span><div><h3>Kodifizieren und skalieren</h3><p>Leitplanken, Qualitätsstandard, Datenzugriff, Monitoring und Lessons Learned standardisieren.</p><em>Artefakt: Operating Standard</em></div></article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Drei Designmuster</h2>
+          <div class="cards-three">
+            <article class="info-card"><div class="tag">A</div><h3>Persona Acceleration</h3><p>Eine Rolle übernimmt mit KI mehr vom bisherigen Handoff selbst. Geeignet, wenn das Problem lokal erkannt wird und der Kontext bereits bei der Rolle liegt.</p></article>
+            <article class="info-card"><div class="tag">B</div><h3>AI-Powered Process Redesign</h3><p>Mehrere Rollen/Systeme sind betroffen. Dann zuerst Prozess vereinfachen, Entscheidungsrechte klären und eine gemeinsame Datenbasis schaffen.</p></article>
+            <article class="info-card"><div class="tag">C</div><h3>AI-First Possibility</h3><p>Nicht nur bestehende Arbeit verschieben: prüfen, ob KI einen neuen Output oder ein neues Leistungsniveau ermöglicht, das vorher unpraktikabel war.</p></article>
+          </div>
+        </section>
+
+        <section class="panel note-panel">
+          <h2>Was die App bewusst nicht macht</h2>
+          <ul>
+            <li>Sie sagt nicht vorher, welche Stellen verschwinden.</li>
+            <li>Sie behandelt technische KI-Fähigkeit nicht als automatische organisatorische Berechtigung.</li>
+            <li>Sie ersetzt keine rechtliche, regulatorische oder fachliche Freigabe.</li>
+            <li>Die Gewichtung ist eine nachvollziehbare Designheuristik – kein wissenschaftlich validiertes Scoring-Modell.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="tab-panel" id="tab-evidence">
+        <section class="panel">
+          <div class="eyebrow">Evidenzbasis</div>
+          <h2>Was aus den Quellen direkt gestützt ist – und was unsere Synthese ist</h2>
+          <div class="evidence-grid">
+            <article class="evidence-card">
+              <span class="evidence-type empirical">Empirisch</span>
+              <h3>Aufgaben überschreiten Berufsgrenzen</h3>
+              <p>OpenAI berichtet, dass 43,5% der nicht-generischen berufsspezifischen Nachrichten Aufgaben außerhalb des eigenen Berufs betrafen. Finanzberechnungen, technische Fehlerbehebung und Marketingaufgaben tauchen besonders häufig außerhalb ihrer Ursprungsdomänen auf.</p>
+              <a href="https://openai.com/de-DE/index/how-ai-is-expanding-what-people-do-at-work/" target="_blank" rel="noreferrer">OpenAI · 27.07.2026</a>
+            </article>
+            <article class="evidence-card">
+              <span class="evidence-type empirical">Empirisch</span>
+              <h3>Task Crossover kann wiederkehrend werden</h3>
+              <p>Bei rund 6.200 konsistent beobachteten Arbeitenden stieg der Anteil zuvor genutzter berufsfremder Aufgaben an der berufsspezifischen KI-Nutzung von 13,1% im April auf 25,9% im Juli. In einer Follow-up-Analyse lag die Rückkehrquote bei 23,6% gegenüber 8,4% ohne vorherige Nutzung.</p>
+              <a href="https://openai.com/index/unlocking-new-ways-of-working/" target="_blank" rel="noreferrer">OpenAI · 16.09.2026</a>
+            </article>
+            <article class="evidence-card">
+              <span class="evidence-type empirical">Empirisch + Framework</span>
+              <h3>Jobs reorganisieren sich häufig vor ihrem Verschwinden</h3>
+              <p>Das OpenAI Jobs Transition Framework trennt technische Aufgabenexposition von menschlicher Zentralität und Nachfrageeffekten. Für die Praxis ist deshalb die Frage zentral, welche Aufgaben delegiert werden und wo Verantwortung/Urteil beim Menschen bleiben.</p>
+              <a href="https://openai.com/index/modeling-ai-jobs-transition/" target="_blank" rel="noreferrer">OpenAI · 25.04.2026</a>
+            </article>
+            <article class="evidence-card">
+              <span class="evidence-type empirical">Empirisch</span>
+              <h3>Urteil und Qualitätskontrolle gewinnen an Bedeutung</h3>
+              <p>Im Microsoft Work Trend Index entfallen 49% der analysierten Copilot-Konversationen auf Analyse, Schlussfolgern und Entscheiden. Befragte nennen Qualitätskontrolle (50%) und kritisches Denken (46%) als wichtiger werdende Fähigkeiten.</p>
+              <a href="https://www.microsoft.com/en-us/worklab/work-trend-index/agents-human-agency-and-the-opportunity-for-every-organization" target="_blank" rel="noreferrer">Microsoft Work Trend Index 2026</a>
+            </article>
+            <article class="evidence-card">
+              <span class="evidence-type practice">Praxisbefund</span>
+              <h3>Outcome und End-to-End-Workflow vor Tool</h3>
+              <p>Microsoft beschreibt als eigene Lernerfahrung: zuerst Geschäftsergebnis, dann End-to-End-Arbeitsablauf neu gestalten. Ein Agent in einem schlechten Prozess beschleunigt sonst nur einzelne Schritte und verschiebt den Engpass.</p>
+              <a href="https://blogs.microsoft.com/blog/2026/09/17/what-weve-learned-from-microsofts-own-ai-transformation/" target="_blank" rel="noreferrer">Microsoft · 17.09.2026</a>
+            </article>
+            <article class="evidence-card">
+              <span class="evidence-type practice">Praxisframework</span>
+              <h3>Transformation braucht Operating Model</h3>
+              <p>Microsofts Frontier Playbook strukturiert Transformation über Geschäftsziel, Diffusionsmechanik, Menschen, institutionalisierte Kontrollen und Security. Es unterscheidet Persona Acceleration, Process Redesign und AI-First Possibility.</p>
+              <a href="https://aka.ms/MicrosoftFrontierPlaybook" target="_blank" rel="noreferrer">Microsoft Frontier Playbook · 2026</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel heuristic-panel">
+          <h2>Heuristik der App</h2>
+          <p>Die Quellen liefern keine validierte Formel dafür, ob eine konkrete Aufgabe den Besitzer wechseln soll. Das Scoring ist deshalb eine explizite Synthese:</p>
+          <div class="formula-grid">
+            <div><strong>Expansion Potential</strong><span>Business Value 24% · AI Leverage 20% · Handoff Friction 16% · Context Proximity 16% · Recurrence 14% · Data Readiness 10%</span></div>
+            <div><strong>Human Boundary</strong><span>Judgment Stakes 55% · Specialist Accountability 45%</span></div>
+          </div>
+          <p class="muted">Die Gewichtung dient der strukturierten Diskussion und Vergleichbarkeit. Sie ist bewusst im UI und in der Methodik dokumentiert, statt als „AI Score“ verborgen zu werden.</p>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span>Neue Aufgabenfelder · TASKSHIFT</span>
+      <span>Lokale App · keine Datenübertragung · Speicherung nur im Browser</span>
+    </footer>
+  </div>
+
+  <script src="model.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
