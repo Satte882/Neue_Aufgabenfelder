@@ -238,20 +238,24 @@ a:hover { color: var(--ice-strong); }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* Zielbild als Entscheidungs-/Orientierungsstreifen */
+/* Zielbild als kompakter Orientierungsstreifen mit klarer Fläche */
 .hero-grid {
   display: grid;
   grid-template-columns: 1fr;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .hero-card {
   position: relative;
   min-height: 0;
   padding: 16px 58px 16px 18px;
-  border-block: 1px solid var(--line);
-  border-left: 2px solid var(--ice);
-  background: color-mix(in srgb, var(--surface-1) 68%, transparent);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ice);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--ice) 6%, transparent), transparent 46%),
+    var(--surface-1);
+  box-shadow: var(--shadow-1);
 }
 
 .hero-card h2 {
@@ -271,18 +275,19 @@ a:hover { color: var(--ice-strong); }
   line-height: 1.45;
 }
 
-/* Arbeitsabschnitte: Trennung über Raum und Linien statt Kartenstapel */
+/* Arbeitsabschnitte: Radar-Sprache, aber klar erkennbare funktionale Flächen */
 .panel {
-  margin: 0 0 30px;
-  padding: 22px 2px 28px;
-  border: 0;
-  border-bottom: 1px solid var(--line-soft);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  margin: 0 0 18px;
+  padding: 22px 24px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--ice) 3%, transparent), transparent 42%),
+    var(--surface-1);
+  box-shadow: var(--shadow-1);
 }
 
-.panel.compact { padding-bottom: 24px; }
+.panel.compact { padding-bottom: 22px; }
 
 .section-heading {
   display: flex;
@@ -354,12 +359,14 @@ textarea,
   width: 100%;
   min-height: var(--touch-target-min);
   padding: 10px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   outline: none;
-  color: var(--ink-soft);
-  background: color-mix(in srgb, var(--surface-input) 92%, transparent);
-  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--surface-0) 78%, transparent);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface-3) 38%, var(--surface-input));
+  box-shadow:
+    inset 0 1px 3px color-mix(in srgb, var(--surface-0) 72%, transparent),
+    0 1px 0 color-mix(in srgb, var(--ink) 2%, transparent);
   font-size: .84rem;
   font-weight: 520;
   letter-spacing: normal;
@@ -395,10 +402,10 @@ textarea:focus,
 .segmented button {
   min-height: var(--touch-target-min);
   padding: 8px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   color: var(--muted-strong);
-  background: var(--surface-input);
+  background: color-mix(in srgb, var(--surface-3) 34%, var(--surface-input));
   font-size: .78rem;
   font-weight: 680;
 }
@@ -418,8 +425,8 @@ textarea:focus,
 /* Skalierungs-Reife */
 .readiness-block {
   margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line-soft);
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
 
 .readiness-block > div:first-child {
@@ -445,28 +452,30 @@ textarea:focus,
 .check-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
+  gap: 8px;
   margin: 14px 0 12px;
-  border-block: 1px solid var(--line-soft);
 }
 
 .check-card {
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: 9px;
-  min-height: 68px;
+  min-height: 70px;
   padding: 11px 12px;
-  border: 0;
-  border-right: 1px solid var(--line-soft);
-  border-radius: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   color: var(--muted);
-  background: transparent;
+  background: var(--surface-2);
+  box-shadow: inset 0 1px color-mix(in srgb, var(--ink) 2%, transparent);
   font-weight: 500;
   letter-spacing: normal;
   text-transform: none;
 }
 
-.check-card:last-child { border-right: 0; }
+.check-card:hover {
+  border-color: var(--line-strong);
+  background: color-mix(in srgb, var(--surface-3) 58%, var(--surface-2));
+}
 
 .check-card input {
   margin-top: 3px;
@@ -518,15 +527,15 @@ textarea:focus,
 }
 
 .criteria-section {
-  padding: 0;
-  border: 0;
-  border-top: 1px solid var(--line-soft);
-  border-radius: 0;
-  background: transparent;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-2) 62%, var(--surface-1));
+  box-shadow: inset 0 1px color-mix(in srgb, var(--ink) 2%, transparent);
 }
 
 .criteria-section-head {
-  padding: 12px 2px 10px;
+  padding: 0 2px 11px;
 }
 
 .criteria-section-head h3 {
@@ -555,17 +564,26 @@ textarea:focus,
 .criterion {
   min-width: 0;
   padding: 12px;
-  border: 1px solid var(--line-soft);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--surface-1) 72%, transparent);
-  box-shadow: inset 0 1px color-mix(in srgb, var(--ink) 2%, transparent);
+  background: var(--surface-1);
+  box-shadow:
+    inset 0 1px color-mix(in srgb, var(--ink) 2%, transparent),
+    var(--shadow-1);
   transition:
     border-color 160ms ease,
     background-color 160ms ease;
 }
 
-.criterion.pending { background: color-mix(in srgb, var(--surface-1) 58%, transparent); }
-.criterion.assessed { border-color: color-mix(in srgb, var(--ice) 28%, var(--line)); }
+.criterion.pending {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface-1) 82%, var(--surface-2));
+}
+
+.criterion.assessed {
+  border-color: color-mix(in srgb, var(--ice) 38%, var(--line));
+  background: color-mix(in srgb, var(--ice) 4%, var(--surface-1));
+}
 
 .criterion-head {
   display: flex;
@@ -618,10 +636,13 @@ input[type="range"] {
 .live-preview {
   margin-top: 22px;
   padding: 16px 18px;
-  border-block: 1px solid var(--line);
-  border-left: 2px solid var(--ice);
-  border-radius: 0;
-  background: color-mix(in srgb, var(--surface-1) 68%, transparent);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ice);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--ice) 8%, transparent), transparent 54%),
+    var(--surface-2);
+  box-shadow: var(--shadow-1);
 }
 
 .pending-recommendation { opacity: .9; }
@@ -765,10 +786,11 @@ input[type="range"] {
 
 .scenario-card {
   padding: 14px 16px;
-  border-block: 1px solid var(--line);
-  border-left: 2px solid var(--ice);
-  border-radius: 0;
-  background: color-mix(in srgb, var(--surface-1) 68%, transparent);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ice);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-1);
 }
 
 .scenario-card strong {
@@ -1264,8 +1286,6 @@ footer {
   .task-detail,
   .formula-grid { grid-template-columns: 1fr; }
   .check-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .check-card:nth-child(2) { border-right: 0; }
-  .check-card:nth-child(-n+2) { border-bottom: 1px solid var(--line-soft); }
   .formula-grid > div,
   .formula-grid > div:last-child {
     padding-inline: 2px;
@@ -1315,12 +1335,6 @@ footer {
   .hint { text-align: left; }
 
   .check-grid { grid-template-columns: 1fr; }
-  .check-card,
-  .check-card:nth-child(2) {
-    border-right: 0;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .check-card:last-child { border-bottom: 0; }
 
   .recommendation-preview { gap: 12px; }
   .quadrant { height: 380px; }
