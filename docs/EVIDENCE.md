@@ -8,6 +8,10 @@ Die App trennt bewusst zwischen:
 2. **Praxisframeworks** aus Microsofts eigener Transformation,
 3. **TASKSHIFT-Synthese** (Scoring, Schwellen, UI-Logik), die nicht als wissenschaftlich validiertes Modell ausgegeben wird.
 
+## Lokale Primärquellen
+
+Die vollständigen Quell-Snapshots für fachliche Reviews liegen unter [`docs/sources/`](sources/README.md). Externe Links bleiben zusätzlich als Herkunftsnachweis erhalten.
+
 ## Quellen und Designimplikationen
 
 | Quelle | Befund | Bedeutung für TASKSHIFT |
