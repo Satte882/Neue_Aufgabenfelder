@@ -22,6 +22,24 @@ assert.equal(M.recommendation(task({businessValue:4,handoffFriction:4,contextPro
 assert.equal(M.recommendation(task({businessValue:4,handoffFriction:4,contextProximity:4,aiLeverage:4,recurrence:4,dataReadiness:4,judgmentStakes:4,specialistAccountability:4})).key, 'prepare-only');
 assert.equal(M.aiMode(task({aiLeverage:4,recurrence:4,dataReadiness:4,judgmentStakes:1,specialistAccountability:1})).key, 'delegation');
 assert.equal(M.readinessScore({rules:true,data:true,metrics:false,manager:false}), 50);
-assert.match(M.markdownReport({profile:{role:'Testrolle',outcome:'Durchlaufzeit',readiness:{rules:true,data:true,metrics:true,manager:true}},tasks:[task()],demandPotential:2}), /# Neue Aufgabenfelder/);
+
+const report = M.markdownReport({
+  profile:{
+    role:'Testrolle',
+    outcome:'Durchlaufzeit senken',
+    organization:'mittel',
+    readiness:{rules:true,data:true,metrics:true,manager:true}
+  },
+  tasks:[task({approvalOwner:'Finance', notes:'Analyse selbst, Freigabe bei Finance.'})],
+  demandPotential:2
+});
+assert.match(report, /# Neue Aufgabenfelder – Testrolle/);
+assert.match(report, /## Ausgangslage/);
+assert.match(report, /\| Aufgabe \| Empfehlung \| Fachfreigabe \|/);
+assert.match(report, /## Gemeinsame Erfolgsmessung/);
+assert.match(report, /Übernahmepotenzial/);
+assert.match(report, /Verantwortungsgrenze/);
+assert.doesNotMatch(report, /Human Boundary/);
+assert.doesNotMatch(report, /schnellere entscheidungen.*verbessert sich/i);
 
 console.log('model tests: OK');
