@@ -131,3 +131,10 @@ Prüft Syntax und Kernlogik des Scoring-Modells.
 - [x] Mobile Darstellung.
 - [x] Methodik und Evidenz dokumentiert.
 - [x] Automatisierte Kernlogik-Tests.
+
+
+## KI-Radar Design System
+
+Die Standalone-App ist visuell an das verbindliche `DESIGN.md` des Repositories `Satte882/KI-UseCase-Radar` angelehnt. Übernommen wurden insbesondere semantische Surface-/Text-/Status-Tokens, die ruhige Control-Room-Ästhetik, flache Abschnittshierarchien, reduzierte Kartenverwendung, Fokuszustände und `prefers-reduced-motion`.
+
+Die technische Implementierung bleibt bewusst eigenständig. Es besteht keine CSS- oder Laufzeitabhängigkeit zum KI-UseCase-Radar; die spätere Integration in dessen Django-Shell ist ein separater Schritt.
