@@ -135,6 +135,6 @@ Prüft Syntax und Kernlogik des Scoring-Modells.
 
 ## KI-Radar Design System
 
-Die Standalone-App ist visuell an das verbindliche `DESIGN.md` des Repositories `Satte882/KI-UseCase-Radar` angelehnt. Übernommen wurden insbesondere semantische Surface-/Text-/Status-Tokens, die ruhige Control-Room-Ästhetik, flache Abschnittshierarchien, reduzierte Kartenverwendung, Fokuszustände und `prefers-reduced-motion`.
+Die verbindlichen UI-Regeln für TASKSHIFT stehen in [DESIGN.md](DESIGN.md). Der gemeinsame Designkern ist bewusst mit dem `DESIGN.md` des Repositories `Satte882/KI-UseCase-Radar` synchronisiert; TASKSHIFT-spezifische Regeln sind separat gekennzeichnet.
 
 Die technische Implementierung bleibt bewusst eigenständig. Es besteht keine CSS- oder Laufzeitabhängigkeit zum KI-UseCase-Radar; die spätere Integration in dessen Django-Shell ist ein separater Schritt.
