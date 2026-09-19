@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const VERSION = '1.3.0';
+  const VERSION = '1.4.0';
 
   const WEIGHTS = Object.freeze({
     businessValue: 0.24,
@@ -282,7 +282,7 @@
 
     if (avgAi < 1.5) return { key: 'less-change', label: 'Weniger unmittelbare Veränderung', description: 'Die betrachteten Kernaufgaben zeigen derzeit geringe KI-Hebelwirkung. Administrative Randaufgaben können sich dennoch verändern.' };
     if (avgAi >= 2.7 && demand >= 3 && avgBoundary >= 40) return { key: 'grow', label: 'Mit KI wachsen', description: 'Hohe KI-Hebelwirkung plus menschliche Zentralität und zusätzliche Nachfrage sprechen für Kapazitäts- oder Leistungswachstum.' };
-    if (avgAi >= 2.7 && avgBoundary < 35) return { key: 'automation-pressure', label: 'Höherer Automatisierungsdruck', description: 'Viele betrachtete Aufgaben sind technisch gut delegierbar und benötigen wenig menschliche Zentralität. Das ist ein Szenariohinweis, keine Beschäftigungsprognose.' };
+    if (avgAi >= 2.7 && avgBoundary < 35) return { key: 'automation-pressure', label: 'Höherer Automatisierungsdruck', description: 'Viele betrachtete Aufgaben sind technisch gut delegierbar und benötigen wenig menschliche Zentralität. Das ist ein Szenariohinweis, keine Prognose.' };
     return { key: 'reorganize', label: 'Rolle reorganisiert sich', description: 'KI kann substanzielle Arbeit übernehmen, während Urteil, Verantwortung, Ausnahmen oder Beziehungen menschlich zentral bleiben.' };
   }
 
